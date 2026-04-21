@@ -27,7 +27,7 @@
 
   .alunos-header { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; }
   .alunos-header span { font-size: 11px; font-weight: bold; color: white; background: #2E6EA6; padding: 6px 8px; border-radius: 4px; text-align: center; }
-  .alunos-header span:first-child { text-align: left; }
+  .alunos-header span:first-child { text-align: left; padding-left: 10px; }
 
   .aluno-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; }
   .aluno-row input, .aluno-row select { width: 100%; padding: 7px 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px; background: #F5FAFF; }
@@ -47,8 +47,9 @@
 
   @media(max-width: 600px) {
     .row { flex-direction: column; gap: 8px; }
-    .alunos-header, .aluno-row { grid-template-columns: 1.5fr 1fr 1fr; }
-    .alunos-header span:nth-child(n+4), .aluno-row *:nth-child(n+4) { display: none; }
+    .alunos-header, .aluno-row { grid-template-columns: 2fr 1fr 1fr; }
+    .alunos-header span:nth-child(n+4),
+    .aluno-row *:nth-child(n+4) { display: none; }
   }
 </style>
 </head>
@@ -127,7 +128,7 @@
   <!-- BOTÃO -->
   <div class="card">
     <button class="btn-cadastrar" onclick="cadastrar()" id="btnCadastrar">✅ CADASTRAR</button>
-    <div class="loading" id="loading">⏳ Enviando dados...</div>
+    <div class="loading" id="loading">⏳ Enviando dados, aguarde...</div>
     <div class="msg" id="msg"></div>
   </div>
 
@@ -135,106 +136,100 @@
 </div>
 
 <script>
-const AIRTABLE_TOKEN = "patHmDbXFTff5ugd1.f3ff33141450b13ed233e1d4ba05e650e82000c65164618237c9b257e67c55c0";
-const BASE_ID        = "appNbnS2pPo264vBa";
-const TABLE_ID       = "tblFCYvozJOojq921";
-const API_URL        = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}`;
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhiWg-94orW-B__luNZRkOzbt1fY-x-0tiawgHqIaTYvQE0ce83229q2jXglKguouQ/exec";
 
-const materiasNL1 = [
-  "Cultura da Igreja","Disciplinas Espirituais","Evitando Ofensas",
-  "Generosidade","Hábitos","Questão do Pecado","Uma Vida de Princípios"
-];
-const materiasNL2 = [
-  "Doutrinas Básicas","Enraizados","Lealdade e Deslealdade",
-  "O Princípio da Honra","Planejados Para Agradar a Deus",
-  "Semelhantes a Cristo","Uma Família para Pertencer"
-];
+  const materiasNL1 = [
+    "Cultura da Igreja","Disciplinas Espirituais","Evitando Ofensas",
+    "Generosidade","Hábitos","Questão do Pecado","Uma Vida de Princípios"
+  ];
+  const materiasNL2 = [
+    "Doutrinas Básicas","Enraizados","Lealdade e Deslealdade",
+    "O Princípio da Honra","Planejados Para Agradar a Deus",
+    "Semelhantes a Cristo","Uma Família para Pertencer"
+  ];
 
-function atualizarMaterias() {
-  const curso = document.getElementById("curso").value;
-  const sel = document.getElementById("materia");
-  sel.innerHTML = '<option value="">Selecione...</option>';
-  const lista = curso === "Next Level I" ? materiasNL1 : curso === "Next Level II" ? materiasNL2 : [];
-  lista.forEach(m => { const o = document.createElement("option"); o.text = m; sel.add(o); });
-}
-
-// Gerar 20 linhas de alunos
-function gerarLinhas() {
-  const container = document.getElementById("lista-alunos");
-  const hoje = new Date().toISOString().split("T")[0];
-  for (let i = 1; i <= 20; i++) {
-    const div = document.createElement("div");
-    div.className = "aluno-row";
-    div.innerHTML = `
-      <input type="text" placeholder="Nome do aluno ${i}" id="nome_${i}">
-      <select id="presenca_${i}">
-        <option value="">-</option>
-        <option>Presente</option>
-        <option>Ausente</option>
-      </select>
-      <input type="number" placeholder="0.0" step="0.1" min="0" max="10" id="notaP_${i}">
-      <input type="number" placeholder="0.0" step="0.1" min="0" max="10" id="nota2C_${i}">
-      <input type="number" placeholder="0.0" step="0.1" min="0" max="10" id="notaT_${i}">
-      <input type="date" id="dataAluno_${i}" value="${hoje}">
-    `;
-    container.appendChild(div);
-  }
-}
-
-function mostrarMsg(tipo, texto) {
-  const el = document.getElementById("msg");
-  el.className = "msg " + tipo;
-  el.textContent = texto;
-}
-
-async function cadastrar() {
-  const curso     = document.getElementById("curso").value;
-  const materia   = document.getElementById("materia").value;
-  const professor = document.getElementById("professor").value;
-  const monitor   = document.getElementById("monitor").value;
-  const dataAula  = document.getElementById("dataAula").value;
-
-  if (!curso || !materia || !professor || !dataAula) {
-    mostrarMsg("error", "⚠️ Preencha Curso, Matéria, Professor e Data antes de cadastrar.");
-    return;
+  function atualizarMaterias() {
+    const curso = document.getElementById("curso").value;
+    const sel   = document.getElementById("materia");
+    sel.innerHTML = '<option value="">Selecione...</option>';
+    const lista = curso === "Next Level I" ? materiasNL1 : curso === "Next Level II" ? materiasNL2 : [];
+    lista.forEach(m => { const o = document.createElement("option"); o.text = m; sel.add(o); });
   }
 
-  // Coletar alunos preenchidos
-  const alunos = [];
-  for (let i = 1; i <= 20; i++) {
-    const nome = document.getElementById(`nome_${i}`).value.trim();
-    if (nome) {
-      alunos.push({
-        nome,
-        presenca:  document.getElementById(`presenca_${i}`).value,
-        notaP:     document.getElementById(`notaP_${i}`).value,
-        nota2C:    document.getElementById(`nota2C_${i}`).value,
-        notaT:     document.getElementById(`notaT_${i}`).value,
-        data:      document.getElementById(`dataAluno_${i}`).value || dataAula,
-      });
+  function gerarLinhas() {
+    const container = document.getElementById("lista-alunos");
+    const hoje = new Date().toISOString().split("T")[0];
+    for (let i = 1; i <= 20; i++) {
+      const div = document.createElement("div");
+      div.className = "aluno-row";
+      div.innerHTML = `
+        <input type="text" placeholder="Nome do aluno ${i}" id="nome_${i}">
+        <select id="presenca_${i}">
+          <option value="">-</option>
+          <option>Presente</option>
+          <option>Ausente</option>
+        </select>
+        <input type="number" placeholder="0.0" step="0.1" min="0" max="10" id="notaP_${i}">
+        <input type="number" placeholder="0.0" step="0.1" min="0" max="10" id="nota2C_${i}">
+        <input type="number" placeholder="0.0" step="0.1" min="0" max="10" id="notaT_${i}">
+        <input type="date" id="dataAluno_${i}" value="${hoje}">
+      `;
+      container.appendChild(div);
     }
   }
 
-  if (alunos.length === 0) {
-    mostrarMsg("error", "⚠️ Informe ao menos um nome de aluno.");
-    return;
+  function mostrarMsg(tipo, texto) {
+    const el = document.getElementById("msg");
+    el.className = "msg " + tipo;
+    el.textContent = texto;
   }
 
-  const btn = document.getElementById("btnCadastrar");
-  const loading = document.getElementById("loading");
-  btn.disabled = true;
-  loading.style.display = "block";
-  document.getElementById("msg").className = "msg";
+  async function cadastrar() {
+    const curso     = document.getElementById("curso").value;
+    const materia   = document.getElementById("materia").value;
+    const professor = document.getElementById("professor").value;
+    const monitor   = document.getElementById("monitor").value;
+    const dataAula  = document.getElementById("dataAula").value;
 
-  const ts = new Date().toLocaleString("pt-BR");
-  const sessao = "Sessao_" + Date.now();
+    if (!curso || !materia || !professor || !dataAula) {
+      mostrarMsg("error", "⚠️ Preencha Curso, Matéria, Professor e Data antes de cadastrar.");
+      return;
+    }
 
-  // Enviar um registro por aluno
-  let erros = 0;
-  for (let idx = 0; idx < alunos.length; idx++) {
-    const a = alunos[idx];
-    const body = {
-      fields: {
+    // Coletar alunos preenchidos
+    const alunos = [];
+    for (let i = 1; i <= 20; i++) {
+      const nome = document.getElementById(`nome_${i}`).value.trim();
+      if (nome) {
+        alunos.push({
+          nome,
+          presenca: document.getElementById(`presenca_${i}`).value,
+          notaP:    document.getElementById(`notaP_${i}`).value,
+          nota2C:   document.getElementById(`nota2C_${i}`).value,
+          notaT:    document.getElementById(`notaT_${i}`).value,
+          data:     document.getElementById(`dataAluno_${i}`).value || dataAula,
+        });
+      }
+    }
+
+    if (alunos.length === 0) {
+      mostrarMsg("error", "⚠️ Informe ao menos um nome de aluno.");
+      return;
+    }
+
+    const btn     = document.getElementById("btnCadastrar");
+    const loading = document.getElementById("loading");
+    btn.disabled           = true;
+    loading.style.display  = "block";
+    document.getElementById("msg").className = "msg";
+
+    const ts     = new Date().toLocaleString("pt-BR");
+    const sessao = "Sessao_" + Date.now();
+    let erros    = 0;
+
+    for (let idx = 0; idx < alunos.length; idx++) {
+      const a = alunos[idx];
+      const payload = {
         "Número":          idx + 1,
         "Timestamp":       ts,
         "Curso":           curso,
@@ -243,55 +238,46 @@ async function cadastrar() {
         "Monitor":         monitor,
         "Nome do Aluno":   a.nome,
         "Presença":        a.presenca,
-        "Nota Prova":      a.notaP     ? parseFloat(a.notaP)  : null,
-        "Nota 2ª Chamada": a.nota2C    ? parseFloat(a.nota2C) : null,
-        "Nota Trabalho":   a.notaT     ? parseFloat(a.notaT)  : null,
+        "Nota Prova":      a.notaP    ? parseFloat(a.notaP)  : "",
+        "Nota 2ª Chamada": a.nota2C   ? parseFloat(a.nota2C) : "",
+        "Nota Trabalho":   a.notaT    ? parseFloat(a.notaT)  : "",
         "Data da Aula":    a.data,
-        "Sessão":          sessao,
+        "Sessão":          sessao
+      };
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+      } catch(e) {
+        erros++;
       }
-    };
+    }
 
-    // Remover campos nulos
-    Object.keys(body.fields).forEach(k => {
-      if (body.fields[k] === null || body.fields[k] === "") delete body.fields[k];
-    });
+    loading.style.display = "none";
+    btn.disabled = false;
 
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${AIRTABLE_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      });
-      if (!res.ok) erros++;
-    } catch(e) {
-      erros++;
+    if (erros === 0) {
+      mostrarMsg("success", `✅ ${alunos.length} aluno(s) cadastrado(s) com sucesso!`);
+      // Limpar apenas a tabela de alunos
+      for (let i = 1; i <= 20; i++) {
+        document.getElementById(`nome_${i}`).value     = "";
+        document.getElementById(`presenca_${i}`).value = "";
+        document.getElementById(`notaP_${i}`).value    = "";
+        document.getElementById(`nota2C_${i}`).value   = "";
+        document.getElementById(`notaT_${i}`).value    = "";
+      }
+    } else {
+      mostrarMsg("error", `⚠️ Erro ao enviar. Verifique a conexão e tente novamente.`);
     }
   }
 
-  loading.style.display = "none";
-  btn.disabled = false;
-
-  if (erros === 0) {
-    mostrarMsg("success", `✅ ${alunos.length} aluno(s) cadastrado(s) com sucesso!`);
-    // Limpar apenas nomes, presenças e notas (manter identificação)
-    for (let i = 1; i <= 20; i++) {
-      document.getElementById(`nome_${i}`).value = "";
-      document.getElementById(`presenca_${i}`).value = "";
-      document.getElementById(`notaP_${i}`).value = "";
-      document.getElementById(`nota2C_${i}`).value = "";
-      document.getElementById(`notaT_${i}`).value = "";
-    }
-  } else {
-    mostrarMsg("error", `⚠️ ${erros} registro(s) falharam. Verifique a conexão e tente novamente.`);
-  }
-}
-
-// Inicializar
-gerarLinhas();
-document.getElementById("dataAula").value = new Date().toISOString().split("T")[0];
+  // Inicializar
+  gerarLinhas();
+  document.getElementById("dataAula").value = new Date().toISOString().split("T")[0];
 </script>
 </body>
 </html>
