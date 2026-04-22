@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Next Level — Registro de Presença e Notas</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f4f8; min-height: 100vh; padding: 20px; }
+  .container { max-width: 750px; margin: 0 auto; }
+
+  .header { background: #1A3A5C; color: white; padding: 20px 24px; border-radius: 12px 12px 0 0; }
+  .header h1 { font-size: 18px; font-weight: bold; }
+  .header p { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+  .gold-bar { height: 5px; background: #E8A020; }
+
+  .card { background: white; padding: 20px 24px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; }
+  .card + .card { border-top: 1px solid #eee; }
+
+  .section-title { background: #1A3A5C; color: white; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 14px; }
+
+  .row { display: flex; gap: 14px; margin-bottom: 12px; }
+  .field { flex: 1; }
+  .field label { display: block; font-size: 12px; font-weight: bold; color: #2E6EA6; margin-bottom: 4px; }
+  .field select, .field input { width: 100%; padding: 9px 11px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; background: #EBF3FB; color: #333; outline: none; }
+  .field select:focus, .field input:focus { border-color: #2E6EA6; background: #fff; }
+
+  .alunos-header { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+  .alunos-header span { font-size: 11px; font-weight: bold; color: white; background: #2E6EA6; padding: 6px 8px; border-radius: 4px; text-align: center; }
+  .alunos-header span:first-child { text-align: left; padding-left: 10px; }
+
+  .aluno-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+  .aluno-row input, .aluno-row select { width: 100%; padding: 7px 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px; background: #F5FAFF; }
+  .aluno-row:nth-child(even) input, .aluno-row:nth-child(even) select { background: #EBF3FB; }
+
+  .btn-cadastrar { width: 100%; padding: 14px; background: #1E8035; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 4px; letter-spacing: 0.5px; }
+  .btn-cadastrar:hover { background: #165f27; }
+  .btn-cadastrar:disabled { background: #aaa; cursor: not-allowed; }
+
+  .footer { background: #f8f8f8; border: 1px solid #ddd; border-top: none; border-radius: 0 0 12px 12px; padding: 10px 24px; font-size: 11px; color: #888; text-align: center; }
+
+  .msg { padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-top: 16px; display: none; }
+  .msg.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
+  .msg.error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+
+  .loading { display: none; text-align: center; color: #2E6EA6; font-size: 13px; margin-top: 10px; }
+
+  @media(max-width: 600px) {
+    .row { flex-direction: column; gap: 8px; }
+    .alunos-header, .aluno-row { grid-template-columns: 2fr 1fr 1fr; }
+    .alunos-header span:nth-child(n+4),
+    .aluno-row *:nth-child(n+4) { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>📋 Registro de Presença e Notas</h1>
+    <p>Next Level · Gestão Acadêmica</p>
+  </div>
+  <div class="gold-bar"></div>
+
+  <!-- IDENTIFICAÇÃO -->
+  <div class="card">
+    <div class="section-title">▸ IDENTIFICAÇÃO DA TURMA</div>
+    <div class="row">
+      <div class="field">
+        <label>Curso *</label>
+        <select id="curso" onchange="atualizarMaterias()">
+          <option value="">Selecione...</option>
+          <option>Next Level I</option>
+          <option>Next Level II</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Matéria *</label>
+        <select id="materia">
+          <option value="">Selecione o curso primeiro</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>Professor *</label>
+        <select id="professor">
+          <option value="">Selecione...</option>
+          <option>Deyse</option><option>Eli</option><option>Euzzy</option>
+          <option>Fabio</option><option>Isabel</option><option>Luã</option>
+          <option>Pr. Édson</option><option>Pra Carol</option>
+          <option>Pra Priscila</option><option>Raphaela</option><option>Vanderlei</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Monitor</label>
+        <select id="monitor">
+          <option value="">Selecione...</option>
+          <option>Bia</option><option>Branco</option><option>João Victor</option><option>Carol Rodrigues</option>
+          <option>Creuza</option><option>Fernanda</option><option>Gabriela</option>
+          <option>Mariza</option><option>Naty</option><option>Rodolpho</option>
+          <option>Suyany</option><option>Yasmin</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field" style="max-width:200px">
+        <label>Data da Aula *</label>
+        <input type="date" id="dataAula">
+      </div>
+    </div>
+  </div>
+
+  <!-- ALUNOS -->
+  <div class="card">
+    <div class="section-title">▸ REGISTRO DOS ALUNOS</div>
+    <div class="alunos-header">
+      <span>Nome do Aluno</span>
+      <span>Presença</span>
+      <span>Nota Prova</span>
+      <span>Nota 2ª Cham.</span>
+      <span>Nota Trabalho</span>
+      <span>Data</span>
+    </div>
+    <div id="lista-alunos"></div>
+  </div>
+
+  <!-- BOTÃO -->
+  <div class="card">
+    <button class="btn-cadastrar" onclick="cadastrar()" id="btnCadastrar">✅ CADASTRAR</button>
+    <div class="loading" id="loading">⏳ Enviando dados, aguarde...</div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="footer">ℹ️ Preencha os dados de cada aluno na sua linha. Campos com * são obrigatórios.</div>
+</div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhiWg-94orW-B__luNZRkOzbt1fY-x-0tiawgHqIaTYvQE0ce83229q2jXglKguouQ/exec";
+
+  const materiasNL1 = [
+    "Cultura da Igreja","Disciplinas Espirituais","Evitando Ofensas",
+    "Generosidade","Hábitos","Questão do Pecado","Uma Vida de Princípios"
+  ];
+  const materiasNL2 = [
+    "Doutrinas Básicas","Enraizados","Lealdade e Deslealdade",
+    "O Princípio da Honra","Planejados Para Agradar a Deus",
+    "Semelhantes a Cristo","Uma Família para Pertencer"
+  ];
+
+  function atualizarMaterias() {
+    const curso = document.getElementById("curso").value;
+    const sel   = document.getElementById("materia");
+    sel.innerHTML = '<option value="">Selecione...</option>';
+    const lista = curso === "Next Level I" ? materiasNL1 : curso === "Next Level II" ? materiasNL2 : [];
+    lista.forEach(m => { const o = document.createElement("option"); o.text = m; sel.add(o); });
+  }
+
+  function gerarLinhas() {
+    const container = document.getElementById("lista-alunos");
+    const hoje = new Date().toISOString().split("T")[0];
+    for (let i = 1; i <= 20; i++) {
+      const div = document.createElement("div");
+      div.className = "aluno-row";
+      div.innerHTML = `
+        <input type="text" placeholder="Nome do aluno ${i}" id="nome_${i}">
+        <select id="presenca_${i}">
+          <option value="">-</option>
+          <option>Presente</option>
+          <option>Ausente</option>
+        </select>
+        <input type="number" placeholder="0.0" step="0.1" min="0" max="10" id="notaP_${i}">
+        <input type="number" placeholder="0.0" step="0.1" min="0" max="10" id="nota2C_${i}">
+        <input type="number" placeholder="0.0" step="0.1" min="0" max="10" id="notaT_${i}">
+        <input type="date" id="dataAluno_${i}" value="${hoje}">
+      `;
+      container.appendChild(div);
+    }
+  }
+
+  function mostrarMsg(tipo, texto) {
+    const el = document.getElementById("msg");
+    el.className = "msg " + tipo;
+    el.textContent = texto;
+  }
+
+  async function cadastrar() {
+    const curso     = document.getElementById("curso").value;
+    const materia   = document.getElementById("materia").value;
+    const professor = document.getElementById("professor").value;
+    const monitor   = document.getElementById("monitor").value;
+    const dataAula  = document.getElementById("dataAula").value;
+
+    if (!curso || !materia || !professor || !dataAula) {
+      mostrarMsg("error", "⚠️ Preencha Curso, Matéria, Professor e Data antes de cadastrar.");
+      return;
+    }
+
+    // Coletar alunos preenchidos
+    const alunos = [];
+    for (let i = 1; i <= 20; i++) {
+      const nome = document.getElementById(`nome_${i}`).value.trim();
+      if (nome) {
+        alunos.push({
+          nome,
+          presenca: document.getElementById(`presenca_${i}`).value,
+          notaP:    document.getElementById(`notaP_${i}`).value,
+          nota2C:   document.getElementById(`nota2C_${i}`).value,
+          notaT:    document.getElementById(`notaT_${i}`).value,
+          data:     document.getElementById(`dataAluno_${i}`).value || dataAula,
+        });
+      }
+    }
+
+    if (alunos.length === 0) {
+      mostrarMsg("error", "⚠️ Informe ao menos um nome de aluno.");
+      return;
+    }
+
+    const btn     = document.getElementById("btnCadastrar");
+    const loading = document.getElementById("loading");
+    btn.disabled           = true;
+    loading.style.display  = "block";
+    document.getElementById("msg").className = "msg";
+
+    const ts     = new Date().toLocaleString("pt-BR");
+    const sessao = "Sessao_" + Date.now();
+    let erros    = 0;
+
+    for (let idx = 0; idx < alunos.length; idx++) {
+      const a = alunos[idx];
+      const payload = {
+        "Número":          idx + 1,
+        "Timestamp":       ts,
+        "Curso":           curso,
+        "Matéria":         materia,
+        "Professor":       professor,
+        "Monitor":         monitor,
+        "Nome do Aluno":   a.nome,
+        "Presença":        a.presenca,
+        "Nota Prova":      a.notaP    ? parseFloat(a.notaP)  : "",
+        "Nota 2ª Chamada": a.nota2C   ? parseFloat(a.nota2C) : "",
+        "Nota Trabalho":   a.notaT    ? parseFloat(a.notaT)  : "",
+        "Data da Aula":    a.data,
+        "Sessão":          sessao
+      };
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+      } catch(e) {
+        erros++;
+      }
+    }
+
+    loading.style.display = "none";
+    btn.disabled = false;
+
+    if (erros === 0) {
+      mostrarMsg("success", `✅ ${alunos.length} aluno(s) cadastrado(s) com sucesso!`);
+      // Limpar apenas a tabela de alunos
+      for (let i = 1; i <= 20; i++) {
+        document.getElementById(`nome_${i}`).value     = "";
+        document.getElementById(`presenca_${i}`).value = "";
+        document.getElementById(`notaP_${i}`).value    = "";
+        document.getElementById(`nota2C_${i}`).value   = "";
+        document.getElementById(`notaT_${i}`).value    = "";
+      }
+    } else {
+      mostrarMsg("error", `⚠️ Erro ao enviar. Verifique a conexão e tente novamente.`);
+    }
+  }
+
+  // Inicializar
+  gerarLinhas();
+  document.getElementById("dataAula").value = new Date().toISOString().split("T")[0];
+</script>
+</body>
+</html>
