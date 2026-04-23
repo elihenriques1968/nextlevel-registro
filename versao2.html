@@ -224,6 +224,13 @@
     document.getElementById("msg").className = "msg";
 
     const ts     = new Date().toLocaleString("pt-BR");
+
+    // Formatar data para DD/MM/YYYY
+    function formatarData(dataISO) {
+      if (!dataISO) return "";
+      const [ano, mes, dia] = dataISO.split("-");
+      return `${dia}/${mes}/${ano}`;
+    }
     const sessao = "Sessao_" + Date.now();
     let erros    = 0;
 
@@ -241,7 +248,7 @@
         "Nota Prova":      a.notaP    ? parseFloat(a.notaP)  : "",
         "Nota 2ª Chamada": a.nota2C   ? parseFloat(a.nota2C) : "",
         "Nota Trabalho":   a.notaT    ? parseFloat(a.notaT)  : "",
-        "Data da Aula":    a.data,
+        "Data da Aula":    formatarData(a.data),
         "Sessão":          sessao
       };
 
