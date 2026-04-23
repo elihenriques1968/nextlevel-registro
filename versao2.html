@@ -159,7 +159,7 @@
   function gerarLinhas() {
     const container = document.getElementById("lista-alunos");
     const hoje = new Date().toISOString().split("T")[0];
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= 30; i++) {
       const div = document.createElement("div");
       div.className = "aluno-row";
       div.innerHTML = `
@@ -198,7 +198,7 @@
 
     // Coletar alunos preenchidos
     const alunos = [];
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= 30; i++) {
       const nome = document.getElementById(`nome_${i}`).value.trim();
       if (nome) {
         alunos.push({
@@ -270,7 +270,7 @@
     if (erros === 0) {
       mostrarMsg("success", `✅ ${alunos.length} aluno(s) cadastrado(s) com sucesso!`);
       // Limpar apenas a tabela de alunos
-      for (let i = 1; i <= 20; i++) {
+      for (let i = 1; i <= 30; i++) {
         document.getElementById(`nome_${i}`).value     = "";
         document.getElementById(`presenca_${i}`).value = "";
         document.getElementById(`notaP_${i}`).value    = "";
