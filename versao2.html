@@ -54,9 +54,12 @@
 
   @media(max-width: 600px) {
     .row { flex-direction: column; gap: 8px; }
-    .alunos-header, .aluno-row { grid-template-columns: 2fr 1fr 1fr; }
-    .alunos-header span:nth-child(n+4),
-    .aluno-row *:nth-child(n+4) { display: none; }
+    .card { padding: 14px 12px; }
+    #lista-alunos, .alunos-header-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .alunos-header { min-width: 580px; }
+    .aluno-row { min-width: 580px; }
+    .alunos-header span { font-size: 10px; padding: 5px 4px; }
+    .aluno-row input, .aluno-row select { font-size: 11px; padding: 6px 4px; }
   }
 </style>
 </head>
@@ -121,7 +124,7 @@
   <!-- ALUNOS -->
   <div class="card">
     <div class="section-title">▸ REGISTRO DOS ALUNOS</div>
-    <div class="alunos-header">
+    <div style="overflow-x:auto; -webkit-overflow-scrolling:touch;"><div class="alunos-header">
       <span>Nome do Aluno</span>
       <span>Presença</span>
       <span>Nota Prova</span>
@@ -129,7 +132,7 @@
       <span>Nota Trabalho</span>
       <span>Data</span>
     </div>
-    <div id="lista-alunos"></div>
+    </div><div style="overflow-x:auto; -webkit-overflow-scrolling:touch;"><div id="lista-alunos"></div></div>
   </div>
 
   <!-- BOTÃO -->
