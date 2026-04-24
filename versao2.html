@@ -30,6 +30,8 @@
   .alunos-header span:first-child { text-align: left; padding-left: 10px; }
 
   .aluno-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; position: relative; }
+  .scroll-tabela { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .scroll-tabela-inner { min-width: 580px; }
   .aluno-row input, .aluno-row select { width: 100%; padding: 7px 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px; background: #F5FAFF; }
   .aluno-row:nth-child(even) input, .aluno-row:nth-child(even) select { background: #EBF3FB; }
 
@@ -55,9 +57,6 @@
   @media(max-width: 600px) {
     .row { flex-direction: column; gap: 8px; }
     .card { padding: 14px 12px; }
-    #lista-alunos, .alunos-header-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .alunos-header { min-width: 580px; }
-    .aluno-row { min-width: 580px; }
     .alunos-header span { font-size: 10px; padding: 5px 4px; }
     .aluno-row input, .aluno-row select { font-size: 11px; padding: 6px 4px; }
   }
@@ -124,16 +123,18 @@
   <!-- ALUNOS -->
   <div class="card">
     <div class="section-title">▸ REGISTRO DOS ALUNOS</div>
-    <div style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
-      <div class="alunos-header">
-        <span>Nome do Aluno</span>
-        <span>Presença</span>
-        <span>Nota Prova</span>
-        <span>Nota 2ª Cham.</span>
-        <span>Nota Trabalho</span>
-        <span>Data</span>
+    <div class="scroll-tabela">
+      <div class="scroll-tabela-inner">
+        <div class="alunos-header">
+          <span>Nome do Aluno</span>
+          <span>Presença</span>
+          <span>Nota Prova</span>
+          <span>Nota 2ª Cham.</span>
+          <span>Nota Trabalho</span>
+          <span>Data</span>
+        </div>
+        <div id="lista-alunos"></div>
       </div>
-      <div id="lista-alunos"></div>
     </div>
   </div>
 
