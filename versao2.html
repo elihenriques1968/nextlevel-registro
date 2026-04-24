@@ -25,11 +25,11 @@
   .field select, .field input { width: 100%; padding: 9px 11px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; background: #EBF3FB; color: #333; outline: none; }
   .field select:focus, .field input:focus { border-color: #2E6EA6; background: #fff; }
 
-  .alunos-header { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+  .alunos-header { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; }
   .alunos-header span { font-size: 11px; font-weight: bold; color: white; background: #2E6EA6; padding: 6px 8px; border-radius: 4px; text-align: center; }
   .alunos-header span:first-child { text-align: left; padding-left: 10px; }
 
-  .aluno-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; position: relative; }
+  .aluno-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; position: relative; }
   .scroll-tabela { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .scroll-tabela-inner { min-width: 580px; }
   .aluno-row input, .aluno-row select { width: 100%; padding: 7px 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px; background: #F5FAFF; }
@@ -131,7 +131,6 @@
           <span>Nota Prova</span>
           <span>Nota 2ª Cham.</span>
           <span>Nota Trabalho</span>
-          <span>Data</span>
         </div>
         <div id="lista-alunos"></div>
       </div>
@@ -185,7 +184,6 @@
         <input type="number" placeholder="0.0" step="0.1" min="0" max="10" id="notaP_${i}">
         <input type="number" placeholder="0.0" step="0.1" min="0" max="10" id="nota2C_${i}">
         <input type="number" placeholder="0.0" step="0.1" min="0" max="10" id="notaT_${i}">
-        <input type="date" id="dataAluno_${i}" >
       `;
       container.appendChild(div);
     }
@@ -220,7 +218,7 @@
           notaP:    document.getElementById(`notaP_${i}`).value,
           nota2C:   document.getElementById(`nota2C_${i}`).value,
           notaT:    document.getElementById(`notaT_${i}`).value,
-          data:     document.getElementById(`dataAluno_${i}`).value || dataAula,
+          data:     dataAula,
         });
       }
     }
