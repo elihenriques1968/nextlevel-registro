@@ -29,8 +29,8 @@
   .alunos-header span { font-size: 11px; font-weight: bold; color: white; background: #2E6EA6; padding: 6px 8px; border-radius: 4px; text-align: center; }
   .header-aula { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 6px !important; }
   .header-label { font-size: 11px; font-weight: bold; color: white; }
-  .header-date { width: 100%; font-size: 10px; padding: 2px 3px; border: 1px solid rgba(255,255,255,0.5); border-radius: 4px; background: rgba(255,255,255,0.15); color: white; cursor: pointer; text-align: center; }
-  .header-date::-webkit-calendar-picker-indicator { filter: invert(1); width: 12px; height: 12px; }
+  .header-date { width: 100%; font-size: 9px; padding: 2px 3px; border: 1px solid rgba(255,255,255,0.5); border-radius: 4px; background: rgba(255,255,255,0.15); color: white; cursor: pointer; text-align: center; margin-top: 2px; }
+  .header-date::-webkit-calendar-picker-indicator { filter: invert(1); width: 10px; height: 10px; }
   .alunos-header span:first-child { text-align: left; padding-left: 10px; }
 
   .aluno-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; position: relative; }
@@ -125,21 +125,25 @@
       <div class="scroll-tabela-inner">
         <div class="alunos-header">
           <span>Nome do Aluno</span>
-          <span class="header-aula" id="hAula1">
+          <span class="header-aula">
             <div class="header-label">Aula 1</div>
-            <input type="date" class="header-date" id="dataAula1" onchange="atualizarHeaderAula(1)">
+            <input type="date" class="header-date" id="dataAula1a" placeholder="Data 1">
+            <input type="date" class="header-date" id="dataAula1b" placeholder="Data 2">
           </span>
-          <span class="header-aula" id="hAula2">
+          <span class="header-aula">
             <div class="header-label">Aula 2</div>
-            <input type="date" class="header-date" id="dataAula2" onchange="atualizarHeaderAula(2)">
+            <input type="date" class="header-date" id="dataAula2a" placeholder="Data 1">
+            <input type="date" class="header-date" id="dataAula2b" placeholder="Data 2">
           </span>
-          <span class="header-aula" id="hAula3">
+          <span class="header-aula">
             <div class="header-label">Aula 3</div>
-            <input type="date" class="header-date" id="dataAula3" onchange="atualizarHeaderAula(3)">
+            <input type="date" class="header-date" id="dataAula3a" placeholder="Data 1">
+            <input type="date" class="header-date" id="dataAula3b" placeholder="Data 2">
           </span>
-          <span class="header-aula" id="hAula4">
+          <span class="header-aula">
             <div class="header-label">Aula 4</div>
-            <input type="date" class="header-date" id="dataAula4" onchange="atualizarHeaderAula(4)">
+            <input type="date" class="header-date" id="dataAula4a" placeholder="Data 1">
+            <input type="date" class="header-date" id="dataAula4b" placeholder="Data 2">
           </span>
           <span>Nota Prova</span>
         </div>
@@ -316,13 +320,9 @@
         document.getElementById(`notaP_${i}`).value = "";
       }
       // Limpar datas dos cabeçalhos
-      document.getElementById("dataAula1").value = "";
-      document.getElementById("dataAula2").value = "";
-      document.getElementById("dataAula3").value = "";
-      document.getElementById("dataAula4").value = "";
-      // Resetar labels
       for (let n = 1; n <= 4; n++) {
-        document.getElementById("hAula" + n).querySelector(".header-label").textContent = "Aula " + n;
+        document.getElementById("dataAula"+n+"a").value = "";
+        document.getElementById("dataAula"+n+"b").value = "";
       }
     } else {
       mostrarMsg("error", `⚠️ Erro ao enviar. Verifique a conexão e tente novamente.`);
