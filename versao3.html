@@ -31,7 +31,7 @@
   .header-label { font-size: 11px; font-weight: bold; color: white; }
   .header-date { width: 100%; font-size: 9px; padding: 2px 3px; border: 1px solid rgba(255,255,255,0.5); border-radius: 4px; background: rgba(255,255,255,0.15); color: white; cursor: pointer; text-align: center; margin-top: 2px; }
   .header-date::-webkit-calendar-picker-indicator { filter: invert(1); width: 10px; height: 10px; }
-  .alunos-header span:first-child { text-align: left; padding-left: 10px; }
+  .alunos-header span:first-child { text-align: center; }
 
   .aluno-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; position: relative; }
   .scroll-tabela { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -124,28 +124,36 @@
     <div class="scroll-tabela">
       <div class="scroll-tabela-inner">
         <div class="alunos-header">
-          <span>Nome do Aluno</span>
+          <span style="text-align:center; display:flex; align-items:center; justify-content:center; height:100%;">Nome do Aluno</span>
           <span class="header-aula">
             <div class="header-label">Aula 1</div>
-            <input type="date" class="header-date" id="dataAula1a" placeholder="Data 1">
-            <input type="date" class="header-date" id="dataAula1b" placeholder="Data 2">
+            <input type="date" class="header-date" id="dataAula1a" onchange="salvarDatas();">
+            <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">Presencial</div>
+            <input type="date" class="header-date" id="dataAula1b" onchange="salvarDatas();">
+            <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">On-line</div>
           </span>
           <span class="header-aula">
             <div class="header-label">Aula 2</div>
-            <input type="date" class="header-date" id="dataAula2a" placeholder="Data 1">
-            <input type="date" class="header-date" id="dataAula2b" placeholder="Data 2">
+            <input type="date" class="header-date" id="dataAula2a" onchange="salvarDatas();">
+            <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">Presencial</div>
+            <input type="date" class="header-date" id="dataAula2b" onchange="salvarDatas();">
+            <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">On-line</div>
           </span>
           <span class="header-aula">
             <div class="header-label">Aula 3</div>
-            <input type="date" class="header-date" id="dataAula3a" placeholder="Data 1">
-            <input type="date" class="header-date" id="dataAula3b" placeholder="Data 2">
+            <input type="date" class="header-date" id="dataAula3a" onchange="salvarDatas();">
+            <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">Presencial</div>
+            <input type="date" class="header-date" id="dataAula3b" onchange="salvarDatas();">
+            <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">On-line</div>
           </span>
           <span class="header-aula">
             <div class="header-label">Aula 4</div>
-            <input type="date" class="header-date" id="dataAula4a" placeholder="Data 1">
-            <input type="date" class="header-date" id="dataAula4b" placeholder="Data 2">
+            <input type="date" class="header-date" id="dataAula4a" onchange="salvarDatas();">
+            <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">Presencial</div>
+            <input type="date" class="header-date" id="dataAula4b" onchange="salvarDatas();">
+            <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">On-line</div>
           </span>
-          <span>Nota Prova</span>
+          <span style="text-align:center; display:flex; align-items:center; justify-content:center; height:100%;">Nota Prova</span>
         </div>
         <div id="lista-alunos"></div>
       </div>
@@ -190,7 +198,7 @@
       const div = document.createElement("div");
       div.className = "aluno-row";
       div.innerHTML = `
-        <input type="text" placeholder="Nome do aluno ${i}" id="nome_${i}" autocomplete="off" oninput="filtrarNomes(this)" onfocus="mostrarSugestoes(this)" onblur="esconderSugestoes(this)"><div class="sugestoes" id="sug_${i}"></div>
+        <input type="text" placeholder="Nome do aluno ${i}" id="nome_${i}" autocomplete="off" oninput="filtrarNomes(this); verificarReset(this);" onfocus="mostrarSugestoes(this)" onblur="esconderSugestoes(this)"><div class="sugestoes" id="sug_${i}"></div>
         <select id="aula1_${i}">
           <option value="">-</option>
           <option>Presente</option>
@@ -341,11 +349,7 @@
         document.getElementById(`aula4_${i}`).value = "";
         document.getElementById(`notaP_${i}`).value = "";
       }
-      // Limpar datas dos cabeçalhos
-      for (let n = 1; n <= 4; n++) {
-        document.getElementById("dataAula"+n+"a").value = "";
-        document.getElementById("dataAula"+n+"b").value = "";
-      }
+      // Datas mantidas após cadastro (travadas)
     } else {
       mostrarMsg("error", `⚠️ Erro ao enviar. Verifique a conexão e tente novamente.`);
     }
@@ -363,10 +367,70 @@
     }
   }
 
+  const DATA_RESET = "2025-01-01"; // Data senha para resetar
+  const STORAGE_KEY = "nextlevel_datas_aulas";
+
   function formatarData(dataISO) {
     if (!dataISO) return "";
     const [ano, mes, dia] = dataISO.split("-");
     return dia + "/" + mes + "/" + ano;
+  }
+
+  function salvarDatas() {
+    const datas = {
+      a1a: document.getElementById("dataAula1a").value,
+      a1b: document.getElementById("dataAula1b").value,
+      a2a: document.getElementById("dataAula2a").value,
+      a2b: document.getElementById("dataAula2b").value,
+      a3a: document.getElementById("dataAula3a").value,
+      a3b: document.getElementById("dataAula3b").value,
+      a4a: document.getElementById("dataAula4a").value,
+      a4b: document.getElementById("dataAula4b").value,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(datas));
+    travarDatas();
+  }
+
+  function travarDatas() {
+    for (let n = 1; n <= 4; n++) {
+      const da = document.getElementById("dataAula"+n+"a");
+      const db = document.getElementById("dataAula"+n+"b");
+      if (da.value) { da.readOnly = true; da.style.opacity = "0.7"; da.style.cursor = "not-allowed"; }
+      if (db.value) { db.readOnly = true; db.style.opacity = "0.7"; db.style.cursor = "not-allowed"; }
+    }
+  }
+
+  function verificarReset(input) {
+    if (input.value.toLowerCase().trim() === "resetardatas") {
+      if (confirm("⚠️ Confirma o reset de todas as datas?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        for (let n = 1; n <= 4; n++) {
+          const da = document.getElementById("dataAula"+n+"a");
+          const db = document.getElementById("dataAula"+n+"b");
+          da.value = ""; da.readOnly = false; da.style.opacity = "1"; da.style.cursor = "pointer";
+          db.value = ""; db.readOnly = false; db.style.opacity = "1"; db.style.cursor = "pointer";
+        }
+        input.value = "";
+        alert("✅ Datas resetadas! Você pode inserir novas datas.");
+      } else {
+        input.value = "";
+      }
+    }
+  }
+
+  function carregarDatas() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+    const datas = JSON.parse(saved);
+    const ids = ["a1a","a1b","a2a","a2b","a3a","a3b","a4a","a4b"];
+    const campos = ["dataAula1a","dataAula1b","dataAula2a","dataAula2b",
+                    "dataAula3a","dataAula3b","dataAula4a","dataAula4b"];
+    ids.forEach((key, i) => {
+      if (datas[key]) {
+        document.getElementById(campos[i]).value = datas[key];
+      }
+    });
+    travarDatas();
   }
 
   const listaNomes = [
@@ -515,6 +579,7 @@
 
   // Inicializar
   gerarLinhas();
+  carregarDatas();
   // Data da Aula deve ser preenchida manualmente pelo professor
 </script>
 </body>
