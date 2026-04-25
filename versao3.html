@@ -277,20 +277,42 @@
 
     for (let idx = 0; idx < alunos.length; idx++) {
       const a = alunos[idx];
+      // Obter datas dos cabeçalhos das aulas (2 datas por aula)
+      function getDatas(n) {
+        const a = document.getElementById("dataAula"+n+"a").value;
+        const b = document.getElementById("dataAula"+n+"b").value;
+        const fa = a ? formatarData(a) : "";
+        const fb = b ? formatarData(b) : "";
+        if (fa && fb) return fa + " / " + fb;
+        if (fa) return fa;
+        if (fb) return fb;
+        return "Aula " + n;
+      }
+
+      const dA1 = getDatas(1);
+      const dA2 = getDatas(2);
+      const dA3 = getDatas(3);
+      const dA4 = getDatas(4);
+
       const payload = {
-        "Número":          idx + 1,
-        "Timestamp":       ts,
-        "Curso":           curso,
-        "Matéria":         materia,
-        "Professor":       professor,
-        "Monitor":         monitor,
-        "Nome do Aluno":   a.nome,
-        "Presença":        a.presenca,
-        "Nota Prova":      a.notaP    ? parseFloat(a.notaP)  : "",
-        "Nota 2ª Chamada": a.nota2C   ? parseFloat(a.nota2C) : "",
-        "Nota Trabalho":   a.notaT    ? parseFloat(a.notaT)  : "",
-        "Data da Aula":    formatarData(a.data),
-        "Sessão":          sessao
+        "Versao":        "v3",
+        "Número":        idx + 1,
+        "Timestamp":     ts,
+        "Curso":         curso,
+        "Matéria":       materia,
+        "Professor":     professor,
+        "Monitor":       monitor,
+        "Nome do Aluno": a.nome,
+        "Aula1_key":     dA1,
+        "Aula2_key":     dA2,
+        "Aula3_key":     dA3,
+        "Aula4_key":     dA4,
+        "Aula1_val":     a.aula1,
+        "Aula2_val":     a.aula2,
+        "Aula3_val":     a.aula3,
+        "Aula4_val":     a.aula4,
+        "Nota Prova":    a.notaP ? parseFloat(a.notaP) : "",
+        "Sessão":        sessao
       };
 
       try {
