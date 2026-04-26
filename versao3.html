@@ -121,30 +121,30 @@
           <span style="text-align:center; display:flex; align-items:center; justify-content:center; height:100%;">Nome do Aluno</span>
           <span class="header-aula">
             <div class="header-label">Aula 1</div>
-            <input type="date" class="header-date" id="dataAula1a" onchange="salvarDatas();">
+            <input type="date" class="header-date" id="dataAula1a" onblur="salvarDatas();">
             <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">Presencial</div>
-            <input type="date" class="header-date" id="dataAula1b" onchange="salvarDatas();">
+            <input type="date" class="header-date" id="dataAula1b" onblur="salvarDatas();">
             <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">On-line</div>
           </span>
           <span class="header-aula">
             <div class="header-label">Aula 2</div>
-            <input type="date" class="header-date" id="dataAula2a" onchange="salvarDatas();">
+            <input type="date" class="header-date" id="dataAula2a" onblur="salvarDatas();">
             <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">Presencial</div>
-            <input type="date" class="header-date" id="dataAula2b" onchange="salvarDatas();">
+            <input type="date" class="header-date" id="dataAula2b" onblur="salvarDatas();">
             <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">On-line</div>
           </span>
           <span class="header-aula">
             <div class="header-label">Aula 3</div>
-            <input type="date" class="header-date" id="dataAula3a" onchange="salvarDatas();">
+            <input type="date" class="header-date" id="dataAula3a" onblur="salvarDatas();">
             <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">Presencial</div>
-            <input type="date" class="header-date" id="dataAula3b" onchange="salvarDatas();">
+            <input type="date" class="header-date" id="dataAula3b" onblur="salvarDatas();">
             <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">On-line</div>
           </span>
           <span class="header-aula">
             <div class="header-label">Aula 4</div>
-            <input type="date" class="header-date" id="dataAula4a" onchange="salvarDatas();">
+            <input type="date" class="header-date" id="dataAula4a" onblur="salvarDatas();">
             <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">Presencial</div>
-            <input type="date" class="header-date" id="dataAula4b" onchange="salvarDatas();">
+            <input type="date" class="header-date" id="dataAula4b" onblur="salvarDatas();">
             <div style="font-size:9px; color:white; opacity:0.9; margin:1px 0;">On-line</div>
           </span>
           <span style="text-align:center; display:flex; align-items:center; justify-content:center; height:100%;">Nota Prova</span>
@@ -344,7 +344,7 @@
 
   const STORAGE_KEY = "nextlevel_datas_aulas";
 
-  // FUNÇÃO ATUALIZADA: Agora com atraso de 300ms para evitar travamento no mobile
+  // ESTRATÉGIA FINAL: Salva apenas quando o usuário sai do campo (blur)
   function salvarDatas() {
     const datas = {
       a1a: document.getElementById("dataAula1a").value,
@@ -357,23 +357,20 @@
       a4b: document.getElementById("dataAula4b").value,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(datas));
-    
-    // Pequeno delay para garantir que o navegador feche o calendário antes de desabilitar o campo
-    setTimeout(() => {
-      travarDatas();
-    }, 300);
+    travarDatas();
   }
 
   function travarDatas() {
     for (let n = 1; n <= 4; n++) {
       const da = document.getElementById("dataAula"+n+"a");
       const db = document.getElementById("dataAula"+n+"b");
-      if (da.value) { 
+      // Importante: Apenas desabilita se o valor existir E o usuário não estiver focado nele
+      if (da.value && document.activeElement !== da) { 
         da.disabled = true; 
         da.style.opacity = "0.7"; 
         da.style.cursor = "not-allowed"; 
       }
-      if (db.value) { 
+      if (db.value && document.activeElement !== db) { 
         db.disabled = true; 
         db.style.opacity = "0.7"; 
         db.style.cursor = "not-allowed"; 
@@ -427,7 +424,7 @@
     "Aurilandia Machado Pereira Santos", "Beatriz Souza", "Bianca Martins Vieira", "Bianca Mendonça De Sousa",
     "Brenda Naiara Farias Dos Santos", "Brener Batista Dos Santos", "Camila Ramos De Carvalho Do Nascimento",
     "Carol Rodrigues Viana", "Creuza Maria Da Silva Campos", "Cristiano Ramos Chrispim",
-    "Daniel Da Silva Pontes", "Davi Cesar Videira Gonçalves Bezerra", "Davi Da Silva Dos Santos",
+    "Daniel Da Silva Pontes", "Davi Cesar Vieira Bezerra", "Davi Da Silva Dos Santos",
     "Dayanara Brandão", "Deise Tavares Bastos", "Diana Batista Santos", "Elaine Aparecida Da Silva",
     "Eliane Helena Nascimento De Souza", "Elizabeth Tavares De Brito", "Erik Henrique Brito De Oliveira",
     "Fabio Cortês", "Felipe Guimarães Bastos", "Fernanda Dos Santos Ferreira", "Fernanda Santos Do Nascimento Sena",
