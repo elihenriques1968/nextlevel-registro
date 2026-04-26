@@ -1,3 +1,6 @@
+Aqui está o código completo e revisado. Apliquei o **delay (atraso) de 300ms** na função de salvamento. Esse tempo é o "pulo do gato" para que o sistema operacional do celular registre a data escolhida e feche a interface do calendário antes de o JavaScript desabilitar o campo.
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -344,6 +347,7 @@
 
   const STORAGE_KEY = "nextlevel_datas_aulas";
 
+  // FUNÇÃO ATUALIZADA: Agora com atraso de 300ms para evitar travamento no mobile
   function salvarDatas() {
     const datas = {
       a1a: document.getElementById("dataAula1a").value,
@@ -356,10 +360,13 @@
       a4b: document.getElementById("dataAula4b").value,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(datas));
-    travarDatas();
+    
+    // Pequeno delay para garantir que o navegador feche o calendário antes de desabilitar o campo
+    setTimeout(() => {
+      travarDatas();
+    }, 300);
   }
 
-  // SOLUÇÃO PARA O BLOQUEIO NO MOBILE: Uso do atributo disabled
   function travarDatas() {
     for (let n = 1; n <= 4; n++) {
       const da = document.getElementById("dataAula"+n+"a");
@@ -488,3 +495,4 @@
 </script>
 </body>
 </html>
+```
