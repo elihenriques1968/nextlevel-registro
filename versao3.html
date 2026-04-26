@@ -367,24 +367,8 @@
     }
   }
 
-  const STORAGE_KEY = "nextlevel_datas_aulas";
-
-  // Storage com fallback para Safari/iPhone
-  function storageSet(key, value) {
-    try { localStorage.setItem(key, value); } catch(e) {
-      try { sessionStorage.setItem(key, value); } catch(e2) {}
-    }
-  }
-  function storageGet(key) {
-    try { return localStorage.getItem(key); } catch(e) {
-      try { return sessionStorage.getItem(key); } catch(e2) { return null; }
-    }
-  }
-  function storageRemove(key) {
-    try { localStorage.removeItem(key); } catch(e) {
-      try { sessionStorage.removeItem(key); } catch(e2) {}
-    }
-  }
+  const DATA_RESET = "2025-01-01"; // Data senha para resetar
+  const COOKIE_KEY = "nextlevel_datas";
 
   function formatarData(dataISO) {
     if (!dataISO) return "";
@@ -403,7 +387,8 @@
       a4a: document.getElementById("dataAula4a").value,
       a4b: document.getElementById("dataAula4b").value,
     };
-    storageSet(STORAGE_KEY, JSON.stringify(datas));
+    const d = new Date(); d.setFullYear(d.getFullYear()+1);
+    document.cookie = COOKIE_KEY+"="+encodeURIComponent(JSON.stringify(datas))+";expires="+d.toUTCString()+";path=/";
     travarDatas();
   }
 
@@ -419,7 +404,7 @@
   function verificarReset(input) {
     if (input.value.toLowerCase().trim() === "resetardatas") {
       if (confirm("⚠️ Confirma o reset de todas as datas?")) {
-        storageRemove(STORAGE_KEY);
+        document.cookie = COOKIE_KEY+"=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
         for (let n = 1; n <= 4; n++) {
           const da = document.getElementById("dataAula"+n+"a");
           const db = document.getElementById("dataAula"+n+"b");
@@ -435,7 +420,8 @@
   }
 
   function carregarDatas() {
-    const saved = storageGet(STORAGE_KEY);
+    const ca = document.cookie.split(";").find(c=>c.trim().startsWith(COOKIE_KEY+"="));
+    const saved = ca ? decodeURIComponent(ca.trim().substring(COOKIE_KEY.length+1)) : null;
     if (!saved) return;
     const datas = JSON.parse(saved);
     const ids = ["a1a","a1b","a2a","a2b","a3a","a3b","a4a","a4b"];
