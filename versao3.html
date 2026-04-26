@@ -31,7 +31,6 @@
   .header-label { font-size: 11px; font-weight: bold; color: white; }
   .header-date { width: 100%; font-size: 9px; padding: 2px 3px; border: 1px solid rgba(255,255,255,0.5); border-radius: 4px; background: rgba(255,255,255,0.15); color: white; cursor: pointer; text-align: center; margin-top: 2px; }
   .header-date::-webkit-calendar-picker-indicator { filter: invert(1); width: 10px; height: 10px; }
-  .alunos-header span:first-child { text-align: center; }
 
   .aluno-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; position: relative; }
   .scroll-tabela { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -51,12 +50,9 @@
 
   .loading { display: none; text-align: center; color: #2E6EA6; font-size: 13px; margin-top: 10px; }
 
-
-  .aluno-row { position: relative; }
   .sugestoes { position: absolute; z-index: 1000; background: white; border: 1px solid #2E6EA6; border-top: none; border-radius: 0 0 6px 6px; max-height: 180px; overflow-y: auto; width: 100%; left: 0; top: 100%; display: none; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
   .sugestoes div { padding: 8px 10px; font-size: 12px; cursor: pointer; }
   .sugestoes div:hover { background: #EBF3FB; color: #1A3A5C; font-weight: bold; }
-  .aluno-col-nome { position: relative; }
 
   @media(max-width: 600px) {
     .row { flex-direction: column; gap: 8px; }
@@ -75,7 +71,6 @@
   </div>
   <div class="gold-bar"></div>
 
-  <!-- IDENTIFICAÇÃO -->
   <div class="card">
     <div class="section-title">▸ IDENTIFICAÇÃO DA TURMA</div>
     <div class="row">
@@ -118,7 +113,6 @@
     </div>
   </div>
 
-  <!-- ALUNOS -->
   <div class="card">
     <div class="section-title">▸ REGISTRO DOS ALUNOS</div>
     <div class="scroll-tabela">
@@ -160,7 +154,6 @@
     </div>
   </div>
 
-  <!-- BOTÃO -->
   <div class="card">
     <button class="btn-cadastrar" onclick="cadastrar()" id="btnCadastrar">✅ CADASTRAR</button>
     <div class="loading" id="loading">⏳ Enviando dados, aguarde...</div>
@@ -193,7 +186,6 @@
 
   function gerarLinhas() {
     const container = document.getElementById("lista-alunos");
-    const hoje = new Date().toISOString().split("T")[0];
     for (let i = 1; i <= 30; i++) {
       const div = document.createElement("div");
       div.className = "aluno-row";
@@ -245,7 +237,6 @@
       return;
     }
 
-    // Coletar alunos preenchidos
     const alunos = [];
     for (let i = 1; i <= 30; i++) {
       const nome = document.getElementById(`nome_${i}`).value.trim();
@@ -272,10 +263,9 @@
     loading.style.display  = "block";
     document.getElementById("msg").className = "msg";
 
-    const ts     = new Date().toLocaleString("pt-BR");
+    const ts = new Date().toLocaleString("pt-BR");
 
-    // Formatar data para DD/MM/YYYY
-    function formatarData(dataISO) {
+    function formatarDataInterna(dataISO) {
       if (!dataISO) return "";
       const [ano, mes, dia] = dataISO.split("-");
       return `${dia}/${mes}/${ano}`;
@@ -285,12 +275,11 @@
 
     for (let idx = 0; idx < alunos.length; idx++) {
       const a = alunos[idx];
-      // Obter datas dos cabeçalhos das aulas (2 datas por aula)
       function getDatas(n) {
-        const a = document.getElementById("dataAula"+n+"a").value;
-        const b = document.getElementById("dataAula"+n+"b").value;
-        const fa = a ? formatarData(a) : "";
-        const fb = b ? formatarData(b) : "";
+        const d1 = document.getElementById("dataAula"+n+"a").value;
+        const d2 = document.getElementById("dataAula"+n+"b").value;
+        const fa = d1 ? formatarDataInterna(d1) : "";
+        const fb = d2 ? formatarDataInterna(d2) : "";
         if (fa && fb) return fa + " / " + fb;
         if (fa) return fa;
         if (fb) return fb;
@@ -305,20 +294,20 @@
       const payload = {
         "Versao":        "v3",
         "Número":        idx + 1,
-        "Timestamp":     ts,
-        "Curso":         curso,
-        "Matéria":       materia,
-        "Professor":     professor,
-        "Monitor":       monitor,
+        "Timestamp":      ts,
+        "Curso":          curso,
+        "Matéria":        materia,
+        "Professor":      professor,
+        "Monitor":        monitor,
         "Nome do Aluno": a.nome,
-        "Aula1_key":     dA1,
-        "Aula2_key":     dA2,
-        "Aula3_key":     dA3,
-        "Aula4_key":     dA4,
-        "Aula1_val":     a.aula1,
-        "Aula2_val":     a.aula2,
-        "Aula3_val":     a.aula3,
-        "Aula4_val":     a.aula4,
+        "Aula1_key":      dA1,
+        "Aula2_key":      dA2,
+        "Aula3_key":      dA3,
+        "Aula4_key":      dA4,
+        "Aula1_val":      a.aula1,
+        "Aula2_val":      a.aula2,
+        "Aula3_val":      a.aula3,
+        "Aula4_val":      a.aula4,
         "Nota Prova":    a.notaP ? parseFloat(a.notaP) : "",
         "Sessão":        sessao
       };
@@ -340,7 +329,6 @@
 
     if (erros === 0) {
       mostrarMsg("success", `✅ ${alunos.length} aluno(s) cadastrado(s) com sucesso!`);
-      // Limpar apenas a tabela de alunos
       for (let i = 1; i <= 30; i++) {
         document.getElementById(`nome_${i}`).value  = "";
         document.getElementById(`aula1_${i}`).value = "";
@@ -349,32 +337,12 @@
         document.getElementById(`aula4_${i}`).value = "";
         document.getElementById(`notaP_${i}`).value = "";
       }
-      // Datas mantidas após cadastro (travadas)
     } else {
       mostrarMsg("error", `⚠️ Erro ao enviar. Verifique a conexão e tente novamente.`);
     }
   }
 
-
-  function atualizarHeaderAula(n) {
-    const input = document.getElementById("dataAula" + n);
-    const label = document.getElementById("hAula" + n).querySelector(".header-label");
-    if (input.value) {
-      const [ano, mes, dia] = input.value.split("-");
-      label.textContent = dia + "/" + mes + "/" + ano;
-    } else {
-      label.textContent = "Aula " + n;
-    }
-  }
-
-  const DATA_RESET = "2025-01-01"; // Data senha para resetar
   const STORAGE_KEY = "nextlevel_datas_aulas";
-
-  function formatarData(dataISO) {
-    if (!dataISO) return "";
-    const [ano, mes, dia] = dataISO.split("-");
-    return dia + "/" + mes + "/" + ano;
-  }
 
   function salvarDatas() {
     const datas = {
@@ -391,12 +359,21 @@
     travarDatas();
   }
 
+  // SOLUÇÃO PARA O BLOQUEIO NO MOBILE: Uso do atributo disabled
   function travarDatas() {
     for (let n = 1; n <= 4; n++) {
       const da = document.getElementById("dataAula"+n+"a");
       const db = document.getElementById("dataAula"+n+"b");
-      if (da.value) { da.readOnly = true; da.style.opacity = "0.7"; da.style.cursor = "not-allowed"; }
-      if (db.value) { db.readOnly = true; db.style.opacity = "0.7"; db.style.cursor = "not-allowed"; }
+      if (da.value) { 
+        da.disabled = true; 
+        da.style.opacity = "0.7"; 
+        da.style.cursor = "not-allowed"; 
+      }
+      if (db.value) { 
+        db.disabled = true; 
+        db.style.opacity = "0.7"; 
+        db.style.cursor = "not-allowed"; 
+      }
     }
   }
 
@@ -407,8 +384,14 @@
         for (let n = 1; n <= 4; n++) {
           const da = document.getElementById("dataAula"+n+"a");
           const db = document.getElementById("dataAula"+n+"b");
-          da.value = ""; da.readOnly = false; da.style.opacity = "1"; da.style.cursor = "pointer";
-          db.value = ""; db.readOnly = false; db.style.opacity = "1"; db.style.cursor = "pointer";
+          da.value = ""; 
+          da.disabled = false; 
+          da.style.opacity = "1"; 
+          da.style.cursor = "pointer";
+          db.value = ""; 
+          db.disabled = false; 
+          db.style.opacity = "1"; 
+          db.style.cursor = "pointer";
         }
         input.value = "";
         alert("✅ Datas resetadas! Você pode inserir novas datas.");
@@ -434,115 +417,38 @@
   }
 
   const listaNomes = [
-    "Adriane Couto Vieira De Almeida",
-    "Alice Amaral",
-    "Aline Nascimento",
-    "Ana Beatriz Guedes Campos",
-    "Ana Paula De Andrade Ribeiro",
-    "Ana Paula Maria Da Silva",
-    "Andressa Barbosa Barreto Da Silva",
-    "André Girão",
-    "Angélica Dos Santos Ferreira",
-    "Arlete Ineida Ferreira Dos Santos",
-    "Aurilandia Machado Pereira Santos",
-    "Beatriz Souza",
-    "Bianca Martins Vieira",
-    "Bianca Mendonça De Sousa",
-    "Brenda Naiara Farias Dos Santos",
-    "Brener Batista Dos Santos",
-    "Camila Ramos De Carvalho Do Nascimento",
-    "Carol Rodrigues Viana",
-    "Creuza Maria Da Silva Campos",
-    "Cristiano Ramos Chrispim",
-    "Daniel Da Silva Pontes",
-    "Davi Cesar Videira Gonçalves Bezerra",
-    "Davi Da Silva Dos Santos",
-    "Dayanara Brandão",
-    "Deise Tavares Bastos",
-    "Diana Batista Santos",
-    "Elaine Aparecida Da Silva",
-    "Eliane Helena Nascimento De Souza",
-    "Elizabeth Tavares De Brito",
-    "Erik Henrique Brito De Oliveira",
-    "Fabio Cortês",
-    "Felipe Guimarães Bastos",
-    "Fernanda Dos Santos Ferreira",
-    "Fernanda Santos Do Nascimento Sena",
-    "Fernando De Jesus Ferreira",
-    "Franklin Candido Da Silva",
-    "Gabriella Barros De Almeida",
-    "Gisella Nicole Torres Vitorino",
-    "Isabel Oliveira Da Silva",
-    "Isabelle Barros De Almeida",
-    "Isaque Dos Santos",
-    "Izis Cabral Pereira",
-    "Jefferson De Sousa Viana",
-    "Jennifer Da Silva De Souza",
-    "Jorge Silva Do Nascimento",
-    "João Carlos Xavier Valente",
-    "João Evangelista Campos",
-    "João Victor Guedes Campos",
-    "Juliana Carreiro",
-    "Jéssica Coutinho De Souza",
-    "Jéssica Nascimento Lins",
-    "Kaylanne Farias Sousa",
-    "Kelle Martins",
-    "Kethelyn Vitoria Silva Tavares",
-    "Kácia Rocha",
-    "Letícia Nascimento Brandão",
-    "Lucas De Souza Parente Da Paz",
-    "Luciane De Oliveira Martins",
-    "Marcio Parente Da Paz",
-    "Maria Célia Dos Santos Rodrigues",
-    "Maria Da Conceição Loyola",
-    "Maria De Fátima Gonçalves Santana",
-    "Maria Eduarda Brum De Souza",
-    "Maria Ignez Rodrigues Ozorio De Melo",
-    "Marinea Doria Da Luz Santos",
-    "Mariza Winkelstroeter V. Henriques",
-    "Mel Ribeiro Martins",
-    "Miguel De Oliveira Martins",
-    "Mikaele Pequeno De Lima",
-    "Milena Sales Dos Santos Borges",
-    "Mylena Ricardo Ramos Dos Santos",
-    "Mylena Souza Ferreira Da Silva",
-    "Nathalia Lopes De Sousa",
-    "Nathalia Sant'Anna",
-    "Nathan Mota Da Silva",
-    "Nero Sant'Anna Da Silva",
-    "Nilzete Medeiros",
-    "Nivea Sant'Anna Da Silva",
-    "Priscila Brum",
-    "Priscila De Jesus Da Conceição De Carvalho",
-    "Priscila Feilo",
-    "Quelly Cristina Bastos",
-    "Rafael Aurélio Teixeira",
-    "Rafael Paiva De Freitas",
-    "Rafaela Andreozzi Nogueira",
-    "Rafaela Da Silva Sampaio Vieira",
-    "Rafaela De Mattos",
-    "Rafaela Loyola",
-    "Rafaelly Candido Mattos",
-    "Raphael Bastos Chrispim",
-    "Raphaela Aragão Melo Braga",
-    "Rhayssa Moraes Andrade",
-    "Robyson Antônio Da Silva Sena",
-    "Rodolpho Rocha",
-    "Ronald Nogueira Machado",
-    "Roselívia Almeida De Lima Pires",
-    "Rômulo Gualberto",
-    "Sophia Alcântara Da Silva",
-    "Suyany Chaves De Almeida",
-    "Telma De Jesus Couto Vieira",
-    "Thiago C Lofrano Borges",
-    "Tiago Melo",
-    "Vanderlei Rodrigues De Mello",
-    "Victor Hugo Paixão Oliveira",
-    "Vinicius Viana",
-    "Weberson Silva",
-    "William Sobreira Marciano",
-    "Yasmim Cintra",
-    "Áquila Pinheiro De Andrade"
+    "Adriane Couto Vieira De Almeida", "Alice Amaral", "Aline Nascimento", "Ana Beatriz Guedes Campos",
+    "Ana Paula De Andrade Ribeiro", "Ana Paula Maria Da Silva", "Andressa Barbosa Barreto Da Silva",
+    "André Girão", "Angélica Dos Santos Ferreira", "Arlete Ineida Ferreira Dos Santos",
+    "Aurilandia Machado Pereira Santos", "Beatriz Souza", "Bianca Martins Vieira", "Bianca Mendonça De Sousa",
+    "Brenda Naiara Farias Dos Santos", "Brener Batista Dos Santos", "Camila Ramos De Carvalho Do Nascimento",
+    "Carol Rodrigues Viana", "Creuza Maria Da Silva Campos", "Cristiano Ramos Chrispim",
+    "Daniel Da Silva Pontes", "Davi Cesar Videira Gonçalves Bezerra", "Davi Da Silva Dos Santos",
+    "Dayanara Brandão", "Deise Tavares Bastos", "Diana Batista Santos", "Elaine Aparecida Da Silva",
+    "Eliane Helena Nascimento De Souza", "Elizabeth Tavares De Brito", "Erik Henrique Brito De Oliveira",
+    "Fabio Cortês", "Felipe Guimarães Bastos", "Fernanda Dos Santos Ferreira", "Fernanda Santos Do Nascimento Sena",
+    "Fernando De Jesus Ferreira", "Franklin Candido Da Silva", "Gabriella Barros De Almeida",
+    "Gisella Nicole Torres Vitorino", "Isabel Oliveira Da Silva", "Isabelle Barros De Almeida",
+    "Isaque Dos Santos", "Izis Cabral Pereira", "Jefferson De Sousa Viana", "Jennifer Da Silva De Souza",
+    "Jorge Silva Do Nascimento", "João Carlos Xavier Valente", "João Evangelista Campos",
+    "João Victor Guedes Campos", "Juliana Carreiro", "Jéssica Coutinho De Souza", "Jéssica Nascimento Lins",
+    "Kaylanne Farias Sousa", "Kelle Martins", "Kethelyn Vitoria Silva Tavares", "Kácia Rocha",
+    "Letícia Nascimento Brandão", "Lucas De Souza Parente Da Paz", "Luciane De Oliveira Martins",
+    "Marcio Parente Da Paz", "Maria Célia Dos Santos Rodrigues", "Maria Da Conceição Loyola",
+    "Maria De Fátima Gonçalves Santana", "Maria Eduarda Brum De Souza", "Maria Ignez Rodrigues Ozorio De Melo",
+    "Marinea Doria Da Luz Santos", "Mariza Winkelstroeter V. Henriques", "Mel Ribeiro Martins",
+    "Miguel De Oliveira Martins", "Mikaele Pequeno De Lima", "Milena Sales Dos Santos Borges",
+    "Mylena Ricardo Ramos Dos Santos", "Mylena Souza Ferreira Da Silva", "Nathalia Lopes De Sousa",
+    "Nathalia Sant'Anna", "Nathan Mota Da Silva", "Nero Sant'Anna Da Silva", "Nilzete Medeiros",
+    "Nivea Sant'Anna Da Silva", "Priscila Brum", "Priscila De Jesus Da Conceição De Carvalho",
+    "Priscila Feilo", "Quelly Cristina Bastos", "Rafael Aurélio Teixeira", "Rafael Paiva De Freitas",
+    "Rafaela Andreozzi Nogueira", "Rafaela Da Silva Sampaio Vieira", "Rafaela De Mattos", "Rafaela Loyola",
+    "Rafaelly Candido Mattos", "Raphael Bastos Chrispim", "Raphaela Aragão Melo Braga",
+    "Rhayssa Moraes Andrade", "Robyson Antônio Da Silva Sena", "Rodolpho Rocha", "Ronald Nogueira Machado",
+    "Roselívia Almeida De Lima Pires", "Rômulo Gualberto", "Sophia Alcântara Da Silva",
+    "Suyany Chaves De Almeida", "Telma De Jesus Couto Vieira", "Thiago C Lofrano Borges", "Tiago Melo",
+    "Vanderlei Rodrigues De Mello", "Victor Hugo Paixão Oliveira", "Vinicius Viana", "Weberson Silva",
+    "William Sobreira Marciano", "Yasmim Cintra", "Áquila Pinheiro De Andrade"
   ];
 
   function filtrarNomes(input) {
@@ -577,10 +483,8 @@
     }, 200);
   }
 
-  // Inicializar
   gerarLinhas();
   carregarDatas();
-  // Data da Aula deve ser preenchida manualmente pelo professor
 </script>
 </body>
 </html>
