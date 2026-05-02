@@ -14,9 +14,10 @@
         select, input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
         .info-panel { background: #eff6ff; border-left: 4px solid var(--accent); padding: 15px; border-radius: 4px; margin-top: 10px; }
         .warning { color: #dc2626; background: #fef2f2; padding: 10px; border-radius: 6px; font-weight: bold; margin-bottom: 15px; display: none; }
-        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 15px; }
         .btn:hover { background: var(--accent); }
         .btn:disabled { background: #94a3b8; cursor: not-allowed; }
+        .footer-alert { text-align: center; color: #dc2626; font-size: 0.9rem; font-weight: 600; background: #fff5f5; padding: 10px; border-radius: 8px; border: 1px dashed #fca5a5; }
         .hidden { display: none; }
     </style>
 </head>
@@ -84,6 +85,10 @@
         </div>
 
         <button type="button" id="btnConfirmar" class="btn" onclick="finalizarMatricula()">Confirmar Cadastro</button>
+        
+        <div class="footer-alert">
+            ⚠️ Atenção: confira se todos os dados estão corretos antes de confirmar a inscrição.
+        </div>
     </form>
 </div>
 
@@ -267,7 +272,6 @@ Uma Família para Pertencer;Profª Isabel Oliveira;Domingos de 16:10 às 17:00 (
             document.getElementById('telefone').value = dbAlunos[nome].tel || "";
             document.getElementById('nascimento').value = dbAlunos[nome].nasc || "";
         } else {
-            // Se o nome não estiver no banco, marca como novo aluno
             matriculaField.value = nome !== "" ? "NOVO ALUNO" : "";
         }
     }
@@ -300,7 +304,7 @@ Uma Família para Pertencer;Profª Isabel Oliveira;Domingos de 16:10 às 17:00 (
             ocupacao[materia] = (ocupacao[materia] || 0) + 1;
             localStorage.setItem('ocupacaoVagas', JSON.stringify(ocupacao));
             alert("Sucesso! Protocolo: " + dados.protocolo);
-            location.reload(); // Recarrega para limpar e atualizar vagas
+            location.reload();
         })
         .catch(() => {
             alert("Erro ao salvar dados.");
