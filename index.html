@@ -255,12 +255,24 @@
 
         fetch(URL_SCRIPT, { method: 'POST', body: JSON.stringify(dados) })
         .then(() => {
-            // INCREMENTA O CONTADOR INTERNO
+            // Incrementa o contador interno
             ocupacao[materia] = (ocupacao[materia] || 0) + 1;
             localStorage.setItem('ocupacaoVagas', JSON.stringify(ocupacao));
             
             alert("Sucesso! Protocolo: " + dados.protocolo);
-            location.reload();
+
+            // LIMPEZA DOS CAMPOS (Adicione estas linhas abaixo)
+            document.getElementById('nomeAluno').value = "";
+            document.getElementById('matricula').value = "";
+            document.getElementById('telefone').value = "";
+            document.getElementById('nascimento').value = "";
+            document.getElementById('detalhesMateria').classList.add('hidden');
+            
+            // Recarrega as matérias para atualizar as vagas na tela sem dar F5
+            carregarMaterias(); 
+            
+            btn.disabled = false;
+            btn.innerText = "Confirmar Cadastro";
         })
         .catch(() => {
             alert("Erro ao salvar.");
