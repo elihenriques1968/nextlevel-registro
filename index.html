@@ -163,33 +163,43 @@
         carregarMaterias();
     }
 
-    function carregarMaterias() {
-        const curso = document.getElementById('curso').value;
-        const concluiuI = document.getElementById('concluiuI').value;
-        const select = document.getElementById('materia');
-        const alerta = document.getElementById('alertaNivel');
-        select.innerHTML = '<option value="">Selecione...</option>';
-        alerta.style.display = "none";
+   function carregarMaterias() {
+    const curso = document.getElementById('curso').value;
+    const concluiuI = document.getElementById('concluiuI').value;
+    const select = document.getElementById('materia');
+    const alerta = document.getElementById('alertaNivel');
+    select.innerHTML = '<option value="">Selecione...</option>';
+    alerta.style.display = "none";
 
-        let listaFiltro = [];
-        if (curso === "Next I" || (curso === "Next II" && concluiuI === "nao")) {
-            if(curso === "Next II") alerta.style.display = "block";
-            listaFiltro = ["Cultura da Igreja", "Uma Vida de Princípios", "Evitando Ofensas", "Do Egoísmo à Generosidade", "Disciplinas Espiritual", "Hábitos e Questão do Pecado"];
-        } else if (curso === "Next II" && concluiuI === "sim") {
-            listaFiltro = ["Doutrinas Básicas", "Semelhantes à Cristo", "Enraizados", "Lealdade e Deslealdade", "O Princípio da Honra", "Uma Família para Pertencer", "Planejados Para Agradar a Deus"];
-        }
+    if (!curso) return;
 
-        listaFiltro.forEach(m => {
-            const info = dbMateriasFull.find(item => item.nome === m);
-            const jaInscritos = ocupacao[m] || 0;
-            if(info && jaInscritos < info.total) {
-                let opt = document.createElement('option');
-                opt.value = m;
-                opt.textContent = m + ` (${info.total - jaInscritos} vagas)`;
-                select.appendChild(opt);
-            }
-        });
+    let listaFiltro = [];
+    if (curso === "Next I" || (curso === "Next II" && concluiuI === "nao")) {
+        if(curso === "Next II") alerta.style.display = "block";
+        listaFiltro = ["Cultura da Igreja", "Uma Vida de Princípios", "Evitando Ofensas", "Do Egoísmo à Generosidade", "Disciplinas Espiritual", "Hábitos e Questão do Pecado"];
+    } else if (curso === "Next II" && concluiuI === "sim") {
+        listaFiltro = ["Doutrinas Básicas", "Semelhantes à Cristo", "Enraizados", "Lealdade e Deslealdade", "O Princípio da Honra", "Uma Família para Pertencer", "Planejados Para Agradar a Deus"];
     }
+
+    let materiasDisponiveis = 0;
+
+    listaFiltro.forEach(m => {
+        const info = dbMateriasFull.find(item => item.nome === m);
+        const jaInscritos = ocupacao[m] || 0;
+        if(info && jaInscritos < info.total) {
+            let opt = document.createElement('option');
+            opt.value = m;
+            opt.textContent = m + ` (${info.total - jaInscritos} vagas)`;
+            select.appendChild(opt);
+            materiasDisponiveis++;
+        }
+    });
+
+    // Nova lógica: se o curso existe mas não há matérias com vaga
+    if (listaFiltro.length > 0 && materiasDisponiveis === 0) {
+        select.innerHTML = '<option value="">Não há mais vaga para esse curso.</option>';
+    }
+}
 
     function exibirDetalhesMateria() {
         const escolhida = document.getElementById('materia').value;
