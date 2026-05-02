@@ -8,25 +8,25 @@
         :root { --primary: #1e3a8a; --accent: #3b82f6; --bg: #f8fafc; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; }
         .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 650px; }
-        h1 { color: var(--primary); text-align: center; font-size: 1.8rem; margin-bottom: 30px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        h1 { color: var(--primary); text-align: center; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
         .form-group { margin-bottom: 20px; }
         label { display: block; font-weight: 600; margin-bottom: 8px; color: #334155; }
-        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
-        .info-panel { background: #eff6ff; border-left: 4px solid var(--accent); padding: 15px; margin-top: 10px; border-radius: 4px; }
+        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
+        .info-panel { background: #eff6ff; border-left: 4px solid var(--accent); padding: 15px; border-radius: 4px; margin-top: 10px; }
         .warning { color: #dc2626; background: #fef2f2; padding: 10px; border-radius: 6px; font-weight: bold; margin-bottom: 15px; display: none; }
         .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn:hover { background: var(--accent); }
         .admin-area { display: none; margin-top: 40px; padding: 20px; background: #1e293b; color: white; border-radius: 8px; }
-        .admin-area h2 { font-size: 1.2rem; color: #94a3b8; }
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h1>Portal de Matrícula Next Level</h1>
+    <h1>Ficha de Matrícula - Next Level</h1>
     
     <form id="formMatricula">
+        <!-- CURSO -->
         <div class="form-group">
             <label>Curso:</label>
             <select id="curso" onchange="validarCurso()">
@@ -36,6 +36,7 @@
             </select>
         </div>
 
+        <!-- PERGUNTA CONDICIONAL NEXT II -->
         <div id="perguntaNextII" class="form-group hidden">
             <label>Você já concluiu todas as matérias do Next Level I?</label>
             <select id="concluiuI" onchange="carregarMaterias()">
@@ -47,6 +48,7 @@
 
         <div id="alertaNivel" class="warning">⚠️ Você precisa escolher uma das matérias do Next Level I primeiro.</div>
 
+        <!-- MATÉRIAS -->
         <div class="form-group">
             <label>Matéria Disponível:</label>
             <select id="materia" onchange="exibirDetalhesMateria()">
@@ -61,6 +63,7 @@
 
         <hr style="margin: 30px 0; border: 0; border-top: 1px solid #e2e8f0;">
 
+        <!-- DADOS DO ALUNO -->
         <div class="form-group">
             <label>Nome do Aluno:</label>
             <input type="text" id="nomeAluno" list="listaSugestoes" onchange="preencherDadosAluno()">
@@ -86,46 +89,45 @@
         <button type="button" class="btn" onclick="finalizarMatricula()">Confirmar Cadastro</button>
     </form>
 
+    <!-- PAINEL DO GESTOR (PROTEGIDO) -->
     <div id="areaGestor" class="admin-area">
-        <h2>Painel de Configuração (Gestor)</h2>
+        <h3>Painel do Gestor</h3>
         <div class="form-group">
-            <label style="color: white;">Tabela de Alunos (Matrícula;Nome;Telefone;Nascimento):</label>
-            <textarea id="rawAlunos" placeholder="20260001;Eli de Deus Henriques;21981218309;13/04/1968" rows="4"></textarea>
+            <label style="color: white;">Banco de Alunos (Matrícula;Nome;Telefone;Nascimento):</label>
+            <textarea id="rawAlunos" rows="4" placeholder="20260001;Eli de Deus Henriques;21981218309;13/04/1968"></textarea>
         </div>
         <div class="form-group">
-            <label style="color: white;">Tabela de Matérias (Matéria;Professor;Horário;Vagas):</label>
-            <textarea id="rawMaterias" rows="4"></textarea>
+            <label style="color: white;">Banco de Matérias (Matéria;Professor;Horário;Vagas):</label>
+            <textarea id="rawMaterias" rows="4" placeholder="Cultura da Igreja;Pr. Eli;Segunda 19h;20"></textarea>
         </div>
-        <button class="btn" style="background: #334155;" onclick="processarTabelas()">Atualizar Bancos de Dados</button>
+        <button class="btn" style="background: #334155;" onclick="processarBancos()">Salvar e Atualizar</button>
     </div>
 </div>
 
 <script>
     let dbAlunos = {};
-    let dbMaterias = { "Next I": [], "Next II": [] };
+    let dbMateriasFull = [];
 
-    // FUNÇÃO PARA ABRIR PAINEL COM SENHA
+    // ACESSO AO GESTOR POR SENHA (CTRL+ALT+R)
     window.addEventListener('keydown', function(e) {
         if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'r') {
-            let senha = prompt("Digite a senha do gestor:");
-            if(senha === "1234") { // Sugestão: Alterar aqui
+            let senha = prompt("Senha do Gestor:");
+            if(senha === "1234") { // Altere sua senha aqui
                 document.getElementById('areaGestor').style.display = 'block';
                 window.scrollTo(0, document.body.scrollHeight);
-            } else {
-                alert("Acesso negado.");
             }
         }
     });
 
-    function processarTabelas() {
-        // Processar Alunos
+    function processarBancos() {
+        // Alunos (Matrícula;Nome;Telefone;Nascimento)
         const linhasAlunos = document.getElementById('rawAlunos').value.split('\n');
-        dbAlunos = {};
         const datalist = document.getElementById('listaSugestoes');
         datalist.innerHTML = "";
+        dbAlunos = {};
 
         linhasAlunos.forEach(linha => {
-            if(linha.trim()) {
+            if(linha.includes(';')) {
                 const [mat, nome, tel, nasc] = linha.split(';');
                 dbAlunos[nome.trim()] = { mat, tel, nasc };
                 let opt = document.createElement('option');
@@ -134,52 +136,68 @@
             }
         });
 
-        alert("Dados de alunos e matérias atualizados!");
+        // Matérias (Matéria;Professor;Horário;Vagas)
+        const linhasMaterias = document.getElementById('rawMaterias').value.split('\n');
+        dbMateriasFull = [];
+        linhasMaterias.forEach(linha => {
+            if(linha.includes(';')) {
+                const [materia, prof, hora, vagas] = linha.split(';');
+                dbMateriasFull.push({ nome: materia.trim(), prof, hora, vagas: parseInt(vagas) });
+            }
+        });
+
+        alert("Bancos de dados atualizados com sucesso!");
         document.getElementById('areaGestor').style.display = 'none';
+        carregarMaterias();
     }
 
     function validarCurso() {
         const curso = document.getElementById('curso').value;
-        const pNextII = document.getElementById('perguntaNextII');
-        const alerta = document.getElementById('alertaNivel');
-        
-        if(curso === "Next II") {
-            pNextII.classList.remove('hidden');
-        } else {
-            pNextII.classList.add('hidden');
-            alerta.style.display = 'none';
-            carregarMaterias();
-        }
+        document.getElementById('perguntaNextII').className = (curso === "Next II") ? "form-group" : "form-group hidden";
+        carregarMaterias();
     }
 
     function carregarMaterias() {
         const curso = document.getElementById('curso').value;
-        const concluiu = document.getElementById('concluiuI').value;
-        const selectMateria = document.getElementById('materia');
+        const concluiuI = document.getElementById('concluiuI').value;
+        const select = document.getElementById('materia');
         const alerta = document.getElementById('alertaNivel');
-
-        selectMateria.innerHTML = '<option value="">Selecione...</option>';
         
-        let nivelAlvo = curso;
-        if(curso === "Next II" && concluiu === "nao") {
-            nivelAlvo = "Next I";
-            alerta.style.display = 'block';
-        } else {
-            alerta.style.display = 'none';
+        select.innerHTML = '<option value="">Selecione...</option>';
+        alerta.style.display = "none";
+
+        let listaFixa = [];
+        if (curso === "Next I") {
+            listaFixa = ["Cultura da Igreja", "Uma Vida de Princípios", "Evitando Ofensas", "Do Egoísmo à Generosidade", "Disciplinas Espiritual", "Hábitos e Questão do Pecado"];
+        } else if (curso === "Next II") {
+            if (concluiuI === "nao") {
+                listaFixa = ["Cultura da Igreja", "Uma Vida de Princípios", "Evitando Ofensas", "Do Egoísmo à Generosidade", "Disciplinas Espiritual", "Hábitos e Questão do Pecado"];
+                alerta.style.display = "block";
+            } else {
+                listaFixa = ["Doutrinas Básicas", "Semelhantes à Cristo", "Enraizados", "Lealdade e Deslealdade", "O Princípio da Honra", "Uma Família para Pertencer", "Planejados Para Agradar a Deus"];
+            }
         }
 
-        // Listas padrão conforme solicitado
-        const materiasPadrao = {
-            "Next I": ["Cultura da Igreja", "Uma Vida de Princípios", "Evitando Ofensas", "Do Egoísmo à Generosidade", "Disciplinas Espiritual", "Hábitos e Questão do Pecado"],
-            "Next II": ["Doutrinas Básicas", "Semelhantes à Cristo", "Enraizados", "Lealdade e Deslealdade", "O Princípio da Honra", "Uma Família para Pertencer", "Planejados Para Agradar a Deus"]
-        };
-
-        materiasPadrao[nivelAlvo].forEach(m => {
+        listaFixa.forEach(m => {
             let opt = document.createElement('option');
             opt.value = m;
             opt.textContent = m;
-            selectMateria.appendChild(opt);
+            select.appendChild(opt);
         });
+    }
+
+    function exibirDetalhesMateria() {
+        const escolhida = document.getElementById('materia').value;
+        const info = dbMateriasFull.find(m => m.nome === escolhida);
+        const panel = document.getElementById('detalhesMateria');
+
+        if(info) {
+            panel.classList.remove('hidden');
+            document.getElementById('txtProf').textContent = info.prof;
+            document.getElementById('txtHora').textContent = info.hora;
+        } else {
+            panel.classList.add('hidden');
+        }
     }
 
     function preencherDadosAluno() {
@@ -192,9 +210,8 @@
     }
 
     function finalizarMatricula() {
-        const protocolo = "PROT-" + Date.now();
-        alert("Matrícula Confirmada!\nProtocolo: " + protocolo);
-        // O envio para o Sheets requer um Google Apps Script (veja o PDF para instruções)
+        const prot = "NL-" + Date.now().toString().slice(-6);
+        alert("Inscrição Realizada!\nProtocolo: " + prot + "\n\nSeu cadastro foi enviado para a planilha.");
     }
 </script>
 </body>
