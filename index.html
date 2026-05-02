@@ -6,22 +6,27 @@
     <title>Registro Next Level - 2026</title>
     <style>
         :root { --primary: #1e3a8a; --accent: #3b82f6; --bg: #f8fafc; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; }
         .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 650px; }
         h1 { color: var(--primary); text-align: center; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
         .form-group { margin-bottom: 20px; }
         label { display: block; font-weight: 600; margin-bottom: 8px; color: #334155; }
-        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; }
         .info-panel { background: #eff6ff; border-left: 4px solid var(--accent); padding: 15px; border-radius: 4px; margin-top: 10px; }
         .warning { color: #dc2626; background: #fef2f2; padding: 10px; border-radius: 6px; font-weight: bold; margin-bottom: 15px; display: none; }
         .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 15px; }
         .btn:hover { background: var(--accent); }
         .btn:disabled { background: #94a3b8; cursor: not-allowed; }
         .footer-alert { text-align: center; color: #dc2626; font-size: 0.9rem; font-weight: 600; background: #fff5f5; padding: 10px; border-radius: 8px; border: 1px dashed #fca5a5; }
+        .gestor-area { margin-top: 30px; width: 100%; max-width: 650px; text-align: center; }
+        .btn-gestor { background: none; border: 1px solid #cbd5e1; color: #64748b; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
         .hidden { display: none; }
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; font-weight: bold; color: var(--primary); }
     </style>
 </head>
 <body>
+
+<div id="loader" class="loading-overlay">Sincronizando vagas...</div>
 
 <div class="card">
     <h1>Ficha de Inscrição de Matérias - Next Level</h1>
@@ -92,123 +97,41 @@
     </form>
 </div>
 
-<script>
-    const RAW_ALUNOS = `20260001;Adriana Menezes Braz;21981724733;21/02/1970
-20260002;Adriane Couto Vieira De Almeida;21992851251;08/05/1991
-20260003;Ágata Chrystian Farias Santa Vila;21990031081;15/04/2011
-20260004;Alice Amaral;21976323518;25/05/2012
-20260005;Alice Dias Pereira Santana;21992219579;07/08/2010
-20260006;Aline Nascimento;21979511878;13/07/1992
-20260007;Ana Beatriz Guedes Campos;;
-20260008;Ana Claudia Gomes;21993365330;25/01/1988
-20260009;Ana Paula De Andrade Ribeiro;;
-20260010;Ana Paula Maria Da Silva;81983285105;17/05/1983
-20260011;André Girão;;
-20260012;Andressa Barbosa Barreto Da Silva;;
-20260013;Angélica Dos Santos Ferreira;21986793165;06/10/1978
-20260014;Anna Luiza Da Silva Collares;21993424746;18/02/2012
-20260015;Áquila Pinheiro De Andrade;;
-20260016;Arlete Ineida Ferreira Dos Santos;;
-20260017;Aurilandia Machado Pereira Santos;21996095192;05/05/1972
-20260018;Beatriz Souza;;
-20260019;Bianca Martins Vieira;21968749851;24/04/2011
-20260020;Bianca Mendonça De Sousa;21980949851;18/01/2009
-20260021;Brenda Naiara Farias Dos Santos;21982198542;03/09/1997
-20260022;Brener Batista Dos Santos;21994568725;14/05/1996
-20260023;Camila Ramos De Carvalho Do Nascimento;;
-20260024;Carolina Rodrigues Viana;21998628769;16/03/1989
-20260025;Creuza Maria Da Silva Campos;21973625112;04/05/1966
-20260026;Cristiano Ramos Chrispim;21979980646;05/11/1977
-20260027;Daniel Da Silva Pontes;;
-20260028;Davi Cesar Videira Gonçalves Bezerra;;
-20260029;Davi Da Silva Dos Santos;21973388237;17/09/2009
-20260030;Dayanara Brandão;21978880678;08/06/2026
-20260031;Dayse De Freitas Feilo;21992667852;03/09/2026
-20260032;Deise Tavares Bastos;21967599299;14/10/1996
-20260033;Elaine Aparecida Da Silva;21980167335;27/05/2026
-20260034;Eliane Helena Nascimento De Souza;21989244566;24/01/1975
-20260035;Eli de Deus Henriques;21981218309;13/04/1968
-20260036;Elizabeth Tavares De Brito;21996732163;04/01/1964
-20260037;Erik Henrique Brito De Oliveira;21996732163;27/12/2013
-20260038;Fabio Cortês;;
-20260039;Farley Terra;21995360608;03/08/1977
-20260040;Felipe Guimarães Bastos;21986101163;04/11/1996
-20260041;Fernanda Dos Santos Ferreira;21965982771;18/02/2013
-20260042;Fernanda Faria Vieira Silva;21974594040;19/11/1982
-20260043;Fernanda Santos Do Nascimento Sena;21964275489;03/11/1978
-20260044;Fernando De Jesus Ferreira;21988195554;17/02/1980
-20260045;Filipe Gabriel Brum De Carvalho;21973446388;05/10/2010
-20260046;Franklin Candido Da Silva;;
-20260047;Gabriel Santos Rocha;21976365995;01/11/2003
-20260048;Gabriela Almeida;;
-20260049;Gabriela Bastos Chrispim;21987995058;25/03/2026
-20260050;Gabriella Barros De Almeida;21964980631;25/06/2007
-20260051;Gisella Nicole Torres Vitorino;21979414192;28/09/2000
-20260052;Guilbert Manoel Da Silva Oliveira;81985143034;08/04/2007
-20260053;Isabel Oliveira Da Silva;;
-20260054;Isabelle Barros De Almeida;21980062671;08/09/2009
-20260055;Isaque Dos Santos;;
-20260056;Izis Cabral Pereira;21996260953;28/05/1994
-20260057;Jefferson De Sousa Viana;21980273637;28/01/1989
-20260058;Jennifer Da Silva De Souza;21993993287;10/03/1992
-20260059;Jéssica Andrade;;
-20260060;Jéssica Coutinho De Souza;21982100682;13/06/1987
-20260061;Jéssica Fontes Da Silva Rodrigues;21994604938;21/05/1992
-20260062;Jéssica Nascimento Lins;21966205959;07/02/2005
-20260063;João Carlos Xavier Valente;21985920833;24/06/1972
-20260064;João Evangelista Campos;21964032422;24/06/1960
-20260065;João Victor Guedes Campos;21966723519;29/07/2011
-20260066;Jorge Silva Do Nascimento;21975818359;17/02/1997
-20260067;José Lucas;21976626735;19/05/2011
-20260068;Juliana Carreiro;21982967797;04/11/1998
-20260069;Kacia Cristina Santos Coelho Rocha;21974816886;15/06/1979
-20260070;Karoline Da Silva Gomes Collares;21990451878;26/10/1996
-20260071;Kaylanne Farias Sousa;21983820254;25/03/2008
-20260072;Kethelyn Vitoria Silva Tavares;;
-20260073;Leandro Lima De Barros;21975308154;14/04/1987
-20260074;Letícia Nascimento Brandão;21977034910;08/01/1995
-20260075;Lindalin Pires De Souza;21971545732;25/09/1994
-20260076;Lisangela Batista Costa;21973014437;20/12/1973
-20260077;Loan Santos De Almeida Benício;21994791328;07/02/1991
-20260078;Luã Oliveira;21992741001;22/03/1990
-20260079;Lucas De Souza Parente Da Paz;21994580709;25/12/2003
-20260080;Luciana Bénicio Da Silva De Almeida;21993995972;07/05/1987
-20260144;Ana Carolina Ximenes de Lima;21980032514;17/01/2009
-20260180;Yasmin Cintra de Alcantara;21987606780;13/05/2003`;
+<div class="gestor-area">
+    <button class="btn-gestor" onclick="window.open('https://docs.google.com/spreadsheets/d/SEU_ID_DA_PLANILHA_AQUI/edit')">📂 Abrir Área do Gestor (Planilha)</button>
+</div>
 
-    const RAW_MATERIAS = `Cultura da Igreja;Profª. Rafaela Aragão;Domingos de 8:10 às 9:00 (Manhã - Presencial);8
-Uma Vida de Princípios;Prof. Vanderlei Mello;Domingos de 17:10 às 18:00 (Tarde - Presencial);8
-Evitando Ofensas;Profª. Priscilla Feiló;Quartas de 20:00 às 20:50 (Noite - On-line);30
-O Princípio da Honra;Profª.Carol Segal;Domingos de 8:10 às 9:00 (Manhã - Presencial);10
-Doutrinas Básicas;Prof. Fábio Côrtes;Domingos de 8:10 às 9:00 (Manhã - Presencial);30
-Semelhantes à Cristo;Prof. Eli Henriquesde;Domingos de 8:10 às 9:00 (Manhã - Presencial);30
-Enraizados;Profª. Euzinete Mota;Domingos de 17:10 às 18:00 (Tarde - Presencial);10
-Lealdade e Deslealdade;Prof. Luã Oliveira;Domingos de 17:10 às 18:00 (Tarde - Presencial);30
-Planejados Para Agradar a Deus;Profª. Deyse Feiló;Domingos de 17:10 às 18:00 (Tarde - Presencial);30
-Uma Família para Pertencer;Profª Isabel Oliveira;Domingos de 16:10 às 17:00 (Tarde - Presencial);30`;
+<script>
+    const URL_SCRIPT = "COLE_AQUI_A_NOVA_URL_DO_APP_SCRIPT";
 
     let dbAlunos = {};
     let dbMateriasFull = [];
-    let ocupacao = JSON.parse(localStorage.getItem('ocupacaoVagas')) || {};
+    let ocupacaoReal = {};
 
-    window.onload = function() {
-        const datalist = document.getElementById('listaSugestoes');
-        RAW_ALUNOS.split('\n').forEach(linha => {
-            if(linha.includes(';')) {
-                const [mat, nome, tel, nasc] = linha.split(';');
-                dbAlunos[nome.trim()] = { mat, tel, nasc };
+    window.onload = async function() {
+        try {
+            const response = await fetch(URL_SCRIPT);
+            const data = await response.json();
+            
+            // Mapear Alunos
+            const datalist = document.getElementById('listaSugestoes');
+            data.alunos.slice(1).forEach(r => {
+                dbAlunos[r[1].trim()] = { mat: r[0], tel: r[2], nasc: r[3] };
                 let opt = document.createElement('option');
-                opt.value = nome.trim();
+                opt.value = r[1].trim();
                 datalist.appendChild(opt);
-            }
-        });
+            });
 
-        RAW_MATERIAS.split('\n').forEach(linha => {
-            if(linha.includes(';')) {
-                const [materia, prof, hora, vagas] = linha.split(';');
-                dbMateriasFull.push({ nome: materia.trim(), prof, hora, total: parseInt(vagas) });
-            }
-        });
+            // Mapear Matérias
+            data.materias.slice(1).forEach(r => {
+                dbMateriasFull.push({ nome: r[0].trim(), prof: r[1], hora: r[2], total: parseInt(r[3]), nivel: r[4] });
+            });
+
+            ocupacaoReal = data.ocupacao;
+            document.getElementById('loader').classList.add('hidden');
+        } catch (e) {
+            alert("Erro ao carregar dados do servidor. Verifique a URL do Script.");
+        }
     };
 
     function validarCurso() {
@@ -227,24 +150,21 @@ Uma Família para Pertencer;Profª Isabel Oliveira;Domingos de 16:10 às 17:00 (
 
         if (!curso) return;
 
-        let listaFiltro = [];
-        if (curso === "Next I" || (curso === "Next II" && concluiuI === "nao")) {
-            if(curso === "Next II") alerta.style.display = "block";
-            listaFiltro = ["Cultura da Igreja", "Uma Vida de Princípios", "Evitando Ofensas", "Do Egoísmo à Generosidade", "Disciplinas Espiritual", "Hábitos e Questão do Pecado"];
-        } else if (curso === "Next II" && concluiuI === "sim") {
-            listaFiltro = ["Doutrinas Básicas", "Semelhantes à Cristo", "Enraizados", "Lealdade e Deslealdade", "O Princípio da Honra", "Uma Família para Pertencer", "Planejados Para Agradar a Deus"];
-        }
+        dbMateriasFull.forEach(info => {
+            let mostrar = false;
+            if (curso === "Next I" && info.nivel === "Next I") mostrar = true;
+            if (curso === "Next II" && concluiuI === "nao" && info.nivel === "Next I") {
+                mostrar = true;
+                alerta.style.display = "block";
+            }
+            if (curso === "Next II" && concluiuI === "sim" && info.nivel === "Next II") mostrar = true;
 
-        let materiasDisponiveis = 0;
-        listaFiltro.forEach(m => {
-            const info = dbMateriasFull.find(item => item.nome === m);
-            const jaInscritos = ocupacao[m] || 0;
-            if(info && jaInscritos < info.total) {
+            const jaInscritos = ocupacaoReal[info.nome] || 0;
+            if (mostrar && jaInscritos < info.total) {
                 let opt = document.createElement('option');
-                opt.value = m;
-                opt.textContent = m + ` (${info.total - jaInscritos} vagas)`;
+                opt.value = info.nome;
+                opt.textContent = `${info.nome} (${info.total - jaInscritos} vagas)`;
                 select.appendChild(opt);
-                materiasDisponiveis++;
             }
         });
     }
@@ -257,7 +177,7 @@ Uma Família para Pertencer;Profª Isabel Oliveira;Domingos de 16:10 às 17:00 (
             panel.classList.remove('hidden');
             document.getElementById('txtProf').textContent = info.prof;
             document.getElementById('txtHora').textContent = info.hora;
-            document.getElementById('txtVagas').textContent = info.total - (ocupacao[escolhida] || 0);
+            document.getElementById('txtVagas').textContent = info.total - (ocupacaoReal[escolhida] || 0);
         } else {
             panel.classList.add('hidden');
         }
@@ -265,26 +185,25 @@ Uma Família para Pertencer;Profª Isabel Oliveira;Domingos de 16:10 às 17:00 (
 
     function preencherDadosAluno() {
         const nome = document.getElementById('nomeAluno').value.trim();
-        const matriculaField = document.getElementById('matricula');
-        
+        const matField = document.getElementById('matricula');
         if(dbAlunos[nome]) {
-            matriculaField.value = dbAlunos[nome].mat;
+            matField.value = dbAlunos[nome].mat;
             document.getElementById('telefone').value = dbAlunos[nome].tel || "";
             document.getElementById('nascimento').value = dbAlunos[nome].nasc || "";
         } else {
-            matriculaField.value = nome !== "" ? "NOVO ALUNO" : "";
+            matField.value = nome !== "" ? "NOVO ALUNO" : "";
         }
     }
 
-    function finalizarMatricula() {
+    async function finalizarMatricula() {
         const btn = document.getElementById('btnConfirmar');
         const materia = document.getElementById('materia').value;
         const nome = document.getElementById('nomeAluno').value;
 
-        if(!materia || !nome) return alert("Por favor, selecione seu nome e a matéria!");
+        if(!materia || !nome) return alert("Preencha todos os campos!");
 
         btn.disabled = true;
-        btn.innerText = "Enviando...";
+        btn.innerText = "Registrando...";
 
         const dados = {
             protocolo: "NL-" + Date.now().toString().slice(-6),
@@ -297,20 +216,14 @@ Uma Família para Pertencer;Profª Isabel Oliveira;Domingos de 16:10 às 17:00 (
             nascimento: document.getElementById('nascimento').value
         };
 
-        const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwK64uVjmMrj9KnRsJ_SJ-p_25_MfcfmTmyGQ6cvI5AyGnCROkooS9iPeF88GCWbjAVdQ/exec";
-
-        fetch(URL_SCRIPT, { method: 'POST', body: JSON.stringify(dados) })
-        .then(() => {
-            ocupacao[materia] = (ocupacao[materia] || 0) + 1;
-            localStorage.setItem('ocupacaoVagas', JSON.stringify(ocupacao));
-            alert("Sucesso! Protocolo: " + dados.protocolo);
+        try {
+            await fetch(URL_SCRIPT, { method: 'POST', body: JSON.stringify(dados) });
+            alert("Inscrição confirmada! Protocolo: " + dados.protocolo);
             location.reload();
-        })
-        .catch(() => {
-            alert("Erro ao salvar dados.");
+        } catch (e) {
+            alert("Erro ao salvar.");
             btn.disabled = false;
-            btn.innerText = "Confirmar Cadastro";
-        });
+        }
     }
 </script>
 </body>
