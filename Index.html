@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Next Level - 2026</title>
+    <style>
+        :root { --primary: #1e3a8a; --accent: #3b82f6; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 650px; }
+        h1 { color: var(--primary); text-align: center; font-size: 1.8rem; margin-bottom: 30px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #334155; }
+        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+        .info-panel { background: #eff6ff; border-left: 4px solid var(--accent); padding: 15px; margin-top: 10px; border-radius: 4px; }
+        .warning { color: #dc2626; background: #fef2f2; padding: 10px; border-radius: 6px; font-weight: bold; margin-bottom: 15px; display: none; }
+        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background: var(--accent); }
+        .admin-area { display: none; margin-top: 40px; padding: 20px; background: #1e293b; color: white; border-radius: 8px; }
+        .admin-area h2 { font-size: 1.2rem; color: #94a3b8; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>Portal de Matrícula Next Level</h1>
+    
+    <form id="formMatricula">
+        <div class="form-group">
+            <label>Curso:</label>
+            <select id="curso" onchange="validarCurso()">
+                <option value="">Selecione o nível...</option>
+                <option value="Next I">Next Level I</option>
+                <option value="Next II">Next Level II</option>
+            </select>
+        </div>
+
+        <div id="perguntaNextII" class="form-group hidden">
+            <label>Você já concluiu todas as matérias do Next Level I?</label>
+            <select id="concluiuI" onchange="carregarMaterias()">
+                <option value="">Selecione...</option>
+                <option value="sim">Sim</option>
+                <option value="nao">Não</option>
+            </select>
+        </div>
+
+        <div id="alertaNivel" class="warning">⚠️ Você precisa escolher uma das matérias do Next Level I primeiro.</div>
+
+        <div class="form-group">
+            <label>Matéria Disponível:</label>
+            <select id="materia" onchange="exibirDetalhesMateria()">
+                <option value="">Selecione o curso primeiro...</option>
+            </select>
+        </div>
+
+        <div id="detalhesMateria" class="info-panel hidden">
+            <p><strong>Professor:</strong> <span id="txtProf">-</span></p>
+            <p><strong>Horário:</strong> <span id="txtHora">-</span></p>
+        </div>
+
+        <hr style="margin: 30px 0; border: 0; border-top: 1px solid #e2e8f0;">
+
+        <div class="form-group">
+            <label>Nome do Aluno:</label>
+            <input type="text" id="nomeAluno" list="listaSugestoes" onchange="preencherDadosAluno()">
+            <datalist id="listaSugestoes"></datalist>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="form-group">
+                <label>Matrícula:</label>
+                <input type="text" id="matricula">
+            </div>
+            <div class="form-group">
+                <label>Telefone:</label>
+                <input type="text" id="telefone">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Data de Nascimento:</label>
+            <input type="text" id="nascimento" placeholder="DD/MM/AAAA">
+        </div>
+
+        <button type="button" class="btn" onclick="finalizarMatricula()">Confirmar Cadastro</button>
+    </form>
+
+    <div id="areaGestor" class="admin-area">
+        <h2>Painel de Configuração (Gestor)</h2>
+        <div class="form-group">
+            <label style="color: white;">Tabela de Alunos (Matrícula;Nome;Telefone;Nascimento):</label>
+            <textarea id="rawAlunos" placeholder="20260001;Eli de Deus Henriques;21981218309;13/04/1968" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+            <label style="color: white;">Tabela de Matérias (Matéria;Professor;Horário;Vagas):</label>
+            <textarea id="rawMaterias" rows="4"></textarea>
+        </div>
+        <button class="btn" style="background: #334155;" onclick="processarTabelas()">Atualizar Bancos de Dados</button>
+    </div>
+</div>
+
+<script>
+    let dbAlunos = {};
+    let dbMaterias = { "Next I": [], "Next II": [] };
+
+    // FUNÇÃO PARA ABRIR PAINEL COM SENHA
+    window.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'r') {
+            let senha = prompt("Digite a senha do gestor:");
+            if(senha === "1234") { // Sugestão: Alterar aqui
+                document.getElementById('areaGestor').style.display = 'block';
+                window.scrollTo(0, document.body.scrollHeight);
+            } else {
+                alert("Acesso negado.");
+            }
+        }
+    });
+
+    function processarTabelas() {
+        // Processar Alunos
+        const linhasAlunos = document.getElementById('rawAlunos').value.split('\n');
+        dbAlunos = {};
+        const datalist = document.getElementById('listaSugestoes');
+        datalist.innerHTML = "";
+
+        linhasAlunos.forEach(linha => {
+            if(linha.trim()) {
+                const [mat, nome, tel, nasc] = linha.split(';');
+                dbAlunos[nome.trim()] = { mat, tel, nasc };
+                let opt = document.createElement('option');
+                opt.value = nome.trim();
+                datalist.appendChild(opt);
+            }
+        });
+
+        alert("Dados de alunos e matérias atualizados!");
+        document.getElementById('areaGestor').style.display = 'none';
+    }
+
+    function validarCurso() {
+        const curso = document.getElementById('curso').value;
+        const pNextII = document.getElementById('perguntaNextII');
+        const alerta = document.getElementById('alertaNivel');
+        
+        if(curso === "Next II") {
+            pNextII.classList.remove('hidden');
+        } else {
+            pNextII.classList.add('hidden');
+            alerta.style.display = 'none';
+            carregarMaterias();
+        }
+    }
+
+    function carregarMaterias() {
+        const curso = document.getElementById('curso').value;
+        const concluiu = document.getElementById('concluiuI').value;
+        const selectMateria = document.getElementById('materia');
+        const alerta = document.getElementById('alertaNivel');
+
+        selectMateria.innerHTML = '<option value="">Selecione...</option>';
+        
+        let nivelAlvo = curso;
+        if(curso === "Next II" && concluiu === "nao") {
+            nivelAlvo = "Next I";
+            alerta.style.display = 'block';
+        } else {
+            alerta.style.display = 'none';
+        }
+
+        // Listas padrão conforme solicitado
+        const materiasPadrao = {
+            "Next I": ["Cultura da Igreja", "Uma Vida de Princípios", "Evitando Ofensas", "Do Egoísmo à Generosidade", "Disciplinas Espiritual", "Hábitos e Questão do Pecado"],
+            "Next II": ["Doutrinas Básicas", "Semelhantes à Cristo", "Enraizados", "Lealdade e Deslealdade", "O Princípio da Honra", "Uma Família para Pertencer", "Planejados Para Agradar a Deus"]
+        };
+
+        materiasPadrao[nivelAlvo].forEach(m => {
+            let opt = document.createElement('option');
+            opt.value = m;
+            opt.textContent = m;
+            selectMateria.appendChild(opt);
+        });
+    }
+
+    function preencherDadosAluno() {
+        const nome = document.getElementById('nomeAluno').value;
+        if(dbAlunos[nome]) {
+            document.getElementById('matricula').value = dbAlunos[nome].mat;
+            document.getElementById('telefone').value = dbAlunos[nome].tel;
+            document.getElementById('nascimento').value = dbAlunos[nome].nasc;
+        }
+    }
+
+    function finalizarMatricula() {
+        const protocolo = "PROT-" + Date.now();
+        alert("Matrícula Confirmada!\nProtocolo: " + protocolo);
+        // O envio para o Sheets requer um Google Apps Script (veja o PDF para instruções)
+    }
+</script>
+</body>
+</html>
