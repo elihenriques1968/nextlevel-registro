@@ -16,6 +16,7 @@
         .warning { color: #dc2626; background: #fef2f2; padding: 10px; border-radius: 6px; font-weight: bold; margin-bottom: 15px; display: none; }
         .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn:hover { background: var(--accent); }
+        .btn:disabled { background: #94a3b8; cursor: not-allowed; }
         .admin-area { display: none; margin-top: 40px; padding: 20px; background: #1e293b; color: white; border-radius: 8px; }
         .hidden { display: none; }
     </style>
@@ -66,7 +67,7 @@
         <!-- DADOS DO ALUNO -->
         <div class="form-group">
             <label>Nome do Aluno:</label>
-            <input type="text" id="nomeAluno" list="listaSugestoes" onchange="preencherDadosAluno()">
+            <input type="text" id="nomeAluno" list="listaSugestoes" oninput="preencherDadosAluno()">
             <datalist id="listaSugestoes"></datalist>
         </div>
 
@@ -86,15 +87,15 @@
             <input type="text" id="nascimento" placeholder="DD/MM/AAAA">
         </div>
 
-        <button type="button" class="btn" onclick="finalizarMatricula()">Confirmar Cadastro</button>
+        <button type="button" id="btnConfirmar" class="btn" onclick="finalizarMatricula()">Confirmar Cadastro</button>
     </form>
 
-    <!-- PAINEL DO GESTOR (PROTEGIDO) -->
+    <!-- PAINEL DO GESTOR -->
     <div id="areaGestor" class="admin-area">
         <h3>Painel do Gestor</h3>
         <div class="form-group">
             <label style="color: white;">Banco de Alunos (Matrícula;Nome;Telefone;Nascimento):</label>
-            <textarea id="rawAlunos" rows="4" placeholder="20260001;Eli de Deus Henriques;21981218309;13/04/1968"></textarea>
+            <textarea id="rawAlunos" rows="4" placeholder="20260001;Eli Henriques;21981218309;13/04/1968"></textarea>
         </div>
         <div class="form-group">
             <label style="color: white;">Banco de Matérias (Matéria;Professor;Horário;Vagas):</label>
@@ -108,20 +109,33 @@
     let dbAlunos = {};
     let dbMateriasFull = [];
 
-    // ACESSO AO GESTOR POR SENHA (CTRL+ALT+R)
+    // Carregar dados salvos ao iniciar
+    window.onload = function() {
+        const savedAlunos = localStorage.getItem('nextLevelAlunos');
+        const savedMaterias = localStorage.getItem('nextLevelMaterias');
+        if(savedAlunos) document.getElementById('rawAlunos').value = savedAlunos;
+        if(savedMaterias) document.getElementById('rawMaterias').value = savedMaterias;
+        if(savedAlunos || savedMaterias) processarBancos(true);
+    };
+
     window.addEventListener('keydown', function(e) {
         if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'r') {
             let senha = prompt("Senha do Gestor:");
-            if(senha === "1234") { // Altere sua senha aqui
+            if(senha === "1234") {
                 document.getElementById('areaGestor').style.display = 'block';
                 window.scrollTo(0, document.body.scrollHeight);
             }
         }
     });
 
-    function processarBancos() {
-        // Alunos (Matrícula;Nome;Telefone;Nascimento)
-        const linhasAlunos = document.getElementById('rawAlunos').value.split('\n');
+    function processarBancos(silencioso = false) {
+        const txtAlunos = document.getElementById('rawAlunos').value;
+        const txtMaterias = document.getElementById('rawMaterias').value;
+        
+        localStorage.setItem('nextLevelAlunos', txtAlunos);
+        localStorage.setItem('nextLevelMaterias', txtMaterias);
+
+        const linhasAlunos = txtAlunos.split('\n');
         const datalist = document.getElementById('listaSugestoes');
         datalist.innerHTML = "";
         dbAlunos = {};
@@ -129,15 +143,16 @@
         linhasAlunos.forEach(linha => {
             if(linha.includes(';')) {
                 const [mat, nome, tel, nasc] = linha.split(';');
-                dbAlunos[nome.trim()] = { mat, tel, nasc };
-                let opt = document.createElement('option');
-                opt.value = nome.trim();
-                datalist.appendChild(opt);
+                if(nome) {
+                    dbAlunos[nome.trim()] = { mat, tel, nasc };
+                    let opt = document.createElement('option');
+                    opt.value = nome.trim();
+                    datalist.appendChild(opt);
+                }
             }
         });
 
-        // Matérias (Matéria;Professor;Horário;Vagas)
-        const linhasMaterias = document.getElementById('rawMaterias').value.split('\n');
+        const linhasMaterias = txtMaterias.split('\n');
         dbMateriasFull = [];
         linhasMaterias.forEach(linha => {
             if(linha.includes(';')) {
@@ -146,7 +161,7 @@
             }
         });
 
-        alert("Bancos de dados atualizados com sucesso!");
+        if(!silencioso) alert("Bancos de dados atualizados!");
         document.getElementById('areaGestor').style.display = 'none';
         carregarMaterias();
     }
@@ -166,19 +181,15 @@
         select.innerHTML = '<option value="">Selecione...</option>';
         alerta.style.display = "none";
 
-        let listaFixa = [];
-        if (curso === "Next I") {
-            listaFixa = ["Cultura da Igreja", "Uma Vida de Princípios", "Evitando Ofensas", "Do Egoísmo à Generosidade", "Disciplinas Espiritual", "Hábitos e Questão do Pecado"];
-        } else if (curso === "Next II") {
-            if (concluiuI === "nao") {
-                listaFixa = ["Cultura da Igreja", "Uma Vida de Princípios", "Evitando Ofensas", "Do Egoísmo à Generosidade", "Disciplinas Espiritual", "Hábitos e Questão do Pecado"];
-                alerta.style.display = "block";
-            } else {
-                listaFixa = ["Doutrinas Básicas", "Semelhantes à Cristo", "Enraizados", "Lealdade e Deslealdade", "O Princípio da Honra", "Uma Família para Pertencer", "Planejados Para Agradar a Deus"];
-            }
+        let listaFiltro = [];
+        if (curso === "Next I" || (curso === "Next II" && concluiuI === "nao")) {
+            if(curso === "Next II") alerta.style.display = "block";
+            listaFiltro = ["Cultura da Igreja", "Uma Vida de Princípios", "Evitando Ofensas", "Do Egoísmo à Generosidade", "Disciplinas Espiritual", "Hábitos e Questão do Pecado"];
+        } else if (curso === "Next II" && concluiuI === "sim") {
+            listaFiltro = ["Doutrinas Básicas", "Semelhantes à Cristo", "Enraizados", "Lealdade e Deslealdade", "O Princípio da Honra", "Uma Família para Pertencer", "Planejados Para Agradar a Deus"];
         }
 
-        listaFixa.forEach(m => {
+        listaFiltro.forEach(m => {
             let opt = document.createElement('option');
             opt.value = m;
             opt.textContent = m;
@@ -210,8 +221,41 @@
     }
 
     function finalizarMatricula() {
-        const prot = "NL-" + Date.now().toString().slice(-6);
-        alert("Inscrição Realizada!\nProtocolo: " + prot + "\n\nSeu cadastro foi enviado para a planilha.");
+        const btn = document.getElementById('btnConfirmar');
+        const materia = document.getElementById('materia').value;
+        const nome = document.getElementById('nomeAluno').value;
+
+        if(!materia || !nome) return alert("Por favor, selecione a matéria e o nome do aluno.");
+
+        btn.disabled = true;
+        btn.innerText = "Enviando para Planilha...";
+
+        const dados = {
+            protocolo: "NL-" + Date.now().toString().slice(-6),
+            curso: document.getElementById('curso').value,
+            materia: materia,
+            professor: document.getElementById('txtProf').textContent,
+            nome: nome,
+            matricula: document.getElementById('matricula').value,
+            telefone: document.getElementById('telefone').value,
+            nascimento: document.getElementById('nascimento').value
+        };
+
+        const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwK64uVjmMrj9KnRsJ_SJ-p_25_MfcfmTmyGQ6cvI5AyGnCROkooS9iPeF88GCWbjAVdQ/exec";
+
+        fetch(URL_SCRIPT, {
+            method: 'POST',
+            body: JSON.stringify(dados)
+        })
+        .then(res => {
+            alert("Inscrição Realizada com Sucesso!\nProtocolo: " + dados.protocolo);
+            location.reload();
+        })
+        .catch(err => {
+            alert("Erro ao conectar com a planilha. Tente novamente.");
+            btn.disabled = false;
+            btn.innerText = "Confirmar Cadastro";
+        });
     }
 </script>
 </body>
