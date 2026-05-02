@@ -74,13 +74,13 @@
             </div>
             <div class="form-group">
                 <label>Telefone:</label>
-                <input type="text" id="telefone" readonly style="background: #f1f5f9;">
+                <input type="text" id="telefone">
             </div>
         </div>
 
         <div class="form-group">
             <label>Data de Nascimento:</label>
-            <input type="text" id="nascimento" readonly style="background: #f1f5f9;">
+            <input type="text" id="nascimento" placeholder="dd/mm/aaaa">
         </div>
 
         <button type="button" id="btnConfirmar" class="btn" onclick="finalizarMatricula()">Confirmar Cadastro</button>
@@ -88,7 +88,6 @@
 </div>
 
 <script>
-    // --- LISTA DE ALUNOS EMBUTIDA ---
     const RAW_ALUNOS = `20260001;Adriana Menezes Braz;21981724733;21/02/1970
 20260002;Adriane Couto Vieira De Almeida;21992851251;08/05/1991
 20260003;Ágata Chrystian Farias Santa Vila;21990031081;15/04/2011
@@ -172,7 +171,6 @@
 20260144;Ana Carolina Ximenes de Lima;21980032514;17/01/2009
 20260180;Yasmin Cintra de Alcantara;21987606780;13/05/2003`;
 
-    // --- LISTA DE MATÉRIAS EMBUTIDA ---
     const RAW_MATERIAS = `Cultura da Igreja;Profª. Rafaela Aragão;Domingos de 8:10 às 9:00 (Manhã - Presencial);8
 Uma Vida de Princípios;Prof. Vanderlei Mello;Domingos de 17:10 às 18:00 (Tarde - Presencial);8
 Evitando Ofensas;Profª. Priscilla Feiló;Quartas de 20:00 às 20:50 (Noite - On-line);30
@@ -188,11 +186,8 @@ Uma Família para Pertencer;Profª Isabel Oliveira;Domingos de 16:10 às 17:00 (
     let dbMateriasFull = [];
     let ocupacao = JSON.parse(localStorage.getItem('ocupacaoVagas')) || {};
 
-    // Processar os dados embutidos ao carregar a página
     window.onload = function() {
         const datalist = document.getElementById('listaSugestoes');
-        
-        // Processar Alunos
         RAW_ALUNOS.split('\n').forEach(linha => {
             if(linha.includes(';')) {
                 const [mat, nome, tel, nasc] = linha.split(';');
@@ -203,7 +198,6 @@ Uma Família para Pertencer;Profª Isabel Oliveira;Domingos de 16:10 às 17:00 (
             }
         });
 
-        // Processar Matérias
         RAW_MATERIAS.split('\n').forEach(linha => {
             if(linha.includes(';')) {
                 const [materia, prof, hora, vagas] = linha.split(';');
@@ -248,10 +242,6 @@ Uma Família para Pertencer;Profª Isabel Oliveira;Domingos de 16:10 às 17:00 (
                 materiasDisponiveis++;
             }
         });
-
-        if (listaFiltro.length > 0 && materiasDisponiveis === 0) {
-            select.innerHTML = '<option value="">Não há mais vaga para esse curso.</option>';
-        }
     }
 
     function exibirDetalhesMateria() {
@@ -269,11 +259,16 @@ Uma Família para Pertencer;Profª Isabel Oliveira;Domingos de 16:10 às 17:00 (
     }
 
     function preencherDadosAluno() {
-        const nome = document.getElementById('nomeAluno').value;
+        const nome = document.getElementById('nomeAluno').value.trim();
+        const matriculaField = document.getElementById('matricula');
+        
         if(dbAlunos[nome]) {
-            document.getElementById('matricula').value = dbAlunos[nome].mat;
-            document.getElementById('telefone').value = dbAlunos[nome].tel || "Não informado";
-            document.getElementById('nascimento').value = dbAlunos[nome].nasc || "Não informado";
+            matriculaField.value = dbAlunos[nome].mat;
+            document.getElementById('telefone').value = dbAlunos[nome].tel || "";
+            document.getElementById('nascimento').value = dbAlunos[nome].nasc || "";
+        } else {
+            // Se o nome não estiver no banco, marca como novo aluno
+            matriculaField.value = nome !== "" ? "NOVO ALUNO" : "";
         }
     }
 
@@ -304,19 +299,8 @@ Uma Família para Pertencer;Profª Isabel Oliveira;Domingos de 16:10 às 17:00 (
         .then(() => {
             ocupacao[materia] = (ocupacao[materia] || 0) + 1;
             localStorage.setItem('ocupacaoVagas', JSON.stringify(ocupacao));
-            
             alert("Sucesso! Protocolo: " + dados.protocolo);
-
-            // Limpeza
-            document.getElementById('nomeAluno').value = "";
-            document.getElementById('matricula').value = "";
-            document.getElementById('telefone').value = "";
-            document.getElementById('nascimento').value = "";
-            document.getElementById('detalhesMateria').classList.add('hidden');
-            carregarMaterias(); 
-            
-            btn.disabled = false;
-            btn.innerText = "Confirmar Cadastro";
+            location.reload(); // Recarrega para limpar e atualizar vagas
         })
         .catch(() => {
             alert("Erro ao salvar dados.");
