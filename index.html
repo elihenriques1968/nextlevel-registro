@@ -112,14 +112,14 @@
     let dbMateriasFull = [];
     let ocupacaoReal = {};
 
-    // Carregamento Inicial
-    window.onload = async function() {
+    window.onload = function() {
+        const script = document.createElement('script');
+        script.src = URL_SCRIPT + "?callback=processarDados";
+        document.body.appendChild(script);
+    };
+
+    window.processarDados = function(data) {
         try {
-            const response = await fetch(URL_SCRIPT);
-            if (!response.ok) throw new Error();
-            const data = await response.json();
-            
-            // Processar Alunos (Aba "Alunos")
             const datalist = document.getElementById('listaSugestoes');
             data.alunos.slice(1).forEach(r => {
                 if(r[1]) {
@@ -130,7 +130,6 @@
                 }
             });
 
-            // Processar Matérias (Aba "Materias")
             data.materias.slice(1).forEach(r => {
                 if(r[0]) {
                     dbMateriasFull.push({ 
@@ -147,7 +146,6 @@
             document.getElementById('loader').classList.add('hidden');
         } catch (e) {
             console.error(e);
-            alert("Erro crítico: Não foi possível conectar à planilha. Verifique a URL do Script e as permissões.");
         }
     };
 
