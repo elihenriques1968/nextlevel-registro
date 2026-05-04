@@ -204,18 +204,36 @@
     }
 
     function finalizarMatricula() {
-        const curso = document.getElementById('curso').value;
-        const materia = document.getElementById('materia').value;
-        const nome = document.getElementById('nomeAluno').value;
+    const dados = {
+        curso: document.getElementById('curso').value,
+        materia: document.getElementById('materia').value,
+        nome: document.getElementById('nomeAluno').value,
+        matricula: document.getElementById('matricula').value,
+        telefone: document.getElementById('telefone').value,
+        nascimento: document.getElementById('nascimento').value
+    };
 
-        if(!curso || !materia || !nome) {
-            alert("Por favor, preencha todos os campos obrigatórios.");
-            return;
-        }
-
-        alert("Sucesso! Inscrição de " + nome + " para a matéria " + materia + " foi registrada localmente.");
-        location.reload();
+    if(!dados.curso || !dados.materia || !dados.nome) {
+        alert("Por favor, preencha todos os campos obrigatórios.");
+        return;
     }
+
+    // Desativa o botão para evitar cliques duplos
+    document.getElementById('btnConfirmar').disabled = true;
+    document.getElementById('btnConfirmar').innerText = "Enviando...";
+
+    // Chama a função do Apps Script
+    google.script.run
+        .withSuccessHandler(function(res) {
+            alert(res);
+            location.reload();
+        })
+        .withFailureHandler(function(err) {
+            alert("Erro ao salvar: " + err);
+            document.getElementById('btnConfirmar').disabled = false;
+        })
+        .processarInscricao(dados);
+}
 </script>
 </body>
 </html>
