@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro Next Level - 2026</title>
+    <title>Inscrição Next Level 2026</title>
     <style>
         :root { --primary: #1e3a8a; --accent: #3b82f6; --bg: #f8fafc; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; }
@@ -18,15 +18,14 @@
         .btn:hover { background: var(--accent); }
         .btn:disabled { background: #94a3b8; cursor: not-allowed; }
         .footer-alert { text-align: center; color: #dc2626; font-size: 0.9rem; font-weight: 600; background: #fff5f5; padding: 10px; border-radius: 8px; border: 1px dashed #fca5a5; }
-        .gestor-area { margin-top: 30px; width: 100%; max-width: 650px; text-align: center; }
-        .btn-gestor { background: none; border: 1px solid #cbd5e1; color: #64748b; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
         .hidden { display: none; }
+        .vagas-destaque { font-size: 1.2rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h1>Ficha de Inscrição de Matérias - Next Level</h1>
+    <h1>Ficha de Inscrição - Next Level</h1>
     
     <form id="formMatricula">
         <div class="form-group">
@@ -47,7 +46,7 @@
             </select>
         </div>
 
-        <div id="alertaNivel" class="warning">⚠️ Você precisa escolher uma das matérias do Next Level I primeiro.</div>
+        <div id="alertaNivel" class="warning">⚠️ Por favor, escolha uma matéria do Next Level I primeiro.</div>
 
         <div class="form-group">
             <label>Matéria Disponível:</label>
@@ -59,14 +58,14 @@
         <div id="detalhesMateria" class="info-panel hidden">
             <p><strong>Professor:</strong> <span id="txtProf">-</span></p>
             <p><strong>Horário:</strong> <span id="txtHora">-</span></p>
-            <p><strong>Vagas Totais:</strong> <span id="txtVagas">-</span></p>
+            <p><strong>Vagas Restantes:</strong> <span id="txtVagas" class="vagas-destaque">-</span></p>
         </div>
 
         <hr style="margin: 30px 0; border: 0; border-top: 1px solid #e2e8f0;">
 
         <div class="form-group">
             <label>Nome do Aluno:</label>
-            <input type="text" id="nomeAluno" list="listaSugestoes" oninput="preencherDadosAluno()" autocomplete="off" placeholder="Digite seu nome completo">
+            <input type="text" id="nomeAluno" list="listaSugestoes" oninput="preencherDadosAluno()" autocomplete="off" placeholder="Digite seu nome...">
             <datalist id="listaSugestoes"></datalist>
         </div>
 
@@ -88,56 +87,37 @@
 
         <button type="button" id="btnConfirmar" class="btn" onclick="finalizarMatricula()">Confirmar Cadastro</button>
         
-        <div class="footer-alert">
-            ⚠️ Atenção: confira se todos os dados estão corretos antes de confirmar a inscrição.
-        </div>
+        <div class="footer-alert">Confira seus dados antes de confirmar.</div>
     </form>
 </div>
 
 <script>
-    // --- BANCO DE DADOS INTEGRADO ---
-    const dbAlunosRaw = `20260001;Adriana Menezes Braz;21981724733;21/02/1970
-20260002;Adriane Couto Vieira De Almeida;21992851251;08/05/1991
-20260003;Ágata Chrystian Farias Santa Vila;21990031081;15/04/2011
-20260004;Alice Amaral;21976323518;25/05/2012
-20260005;Alice Dias Pereira Santana;21992219579;07/08/2010
-20260006;Aline Nascimento;21979511878;13/07/1992
-20260007;Ana Beatriz Guedes Campos;;
-20260008;Ana Claudia Gomes;21993365330;25/01/1988
-20260009;Ana Paula De Andrade Ribeiro;;
-20260010;Ana Paula Maria Da Silva;81983285105;17/05/1983
-20260025;Creuza Maria Da Silva Campos;21973625112;04/05/1966
-20260078;Luã Oliveira;21992741001;22/03/1990
-20260125;Rodolpho Rocha;;`; // Exemplo reduzido, insira todos aqui.
-
-    const dbMateriasFull = [
-        { nome: "Cultura da Igreja", prof: "Profª. Rafaela Aragão", hora: "Domingos 08:10", total: 8, nivel: "Next I" },
-        { nome: "Uma Vida de Princípios", prof: "Prof. Vanderlei Mello", hora: "Domingos 17:10", total: 8, nivel: "Next I" },
-        { nome: "Evitando Ofensas", prof: "Profª. Priscilla Feiló", hora: "Quartas 20:00 (On-line)", total: 30, nivel: "Next II" },
-        { nome: "O Princípio da Honra", prof: "Profª. Carol Segal", hora: "Domingos 08:10", total: 10, nivel: "Next II" },
-        { nome: "Doutrinas Básicas", prof: "Prof. Fábio Côrtes", hora: "Domingos 08:10", total: 30, nivel: "Next I" },
-        { nome: "Semelhantes à Cristo", prof: "Prof. Eli Henriques", hora: "Domingos 08:10", total: 30, nivel: "Next II" },
-        { nome: "Enraizados", prof: "Profª. Euzinete Mota", hora: "Domingos 17:10", total: 10, nivel: "Next I" },
-        { nome: "Lealdade e Deslealdade", prof: "Prof. Luã Oliveira", hora: "Domingos 17:10", total: 30, nivel: "Next II" },
-        { nome: "Planejados Para Agradar a Deus", prof: "Profª. Deyse Feiló", hora: "Domingos 17:10", total: 30, nivel: "Next II" },
-        { nome: "Uma Família para Pertencer", prof: "Profª Isabel Oliveira", hora: "Domingos 16:10", total: 30, nivel: "Next I" }
-    ];
-
     let dbAlunos = {};
+    let dbMateriasFull = [];
+    let vagasOcupadasGlobal = {};
 
+    // Carrega os dados da planilha assim que a página abre
     window.onload = function() {
-        const datalist = document.getElementById('listaSugestoes');
-        dbAlunosRaw.split('\n').forEach(linha => {
-            const r = linha.split(';');
-            if(r[1]) {
-                const nome = r[1].trim();
-                dbAlunos[nome] = { mat: r[0], tel: r[2], nasc: r[3] };
+        google.script.run.withSuccessHandler(function(dados) {
+            dbAlunos = dados.alunos;
+            dbMateriasFull = dados.materias;
+            
+            const datalist = document.getElementById('listaSugestoes');
+            for (let nome in dbAlunos) {
                 let opt = document.createElement('option');
                 opt.value = nome;
                 datalist.appendChild(opt);
             }
-        });
+            
+            atualizarContadorVagas();
+        }).buscarDadosIniciais();
     };
+
+    function atualizarContadorVagas() {
+        google.script.run.withSuccessHandler(function(contagem) {
+            vagasOcupadasGlobal = contagem;
+        }).buscarVagasOcupadas();
+    }
 
     function validarCurso() {
         const curso = document.getElementById('curso').value;
@@ -153,7 +133,6 @@
         
         select.innerHTML = '<option value="">Selecione...</option>';
         alerta.style.display = "none";
-        document.getElementById('detalhesMateria').classList.add('hidden');
 
         if (!curso) return;
 
@@ -168,7 +147,6 @@
                     mostrar = true;
                 }
             }
-
             if (mostrar) {
                 let opt = document.createElement('option');
                 opt.value = info.nome;
@@ -182,11 +160,18 @@
         const escolhida = document.getElementById('materia').value;
         const info = dbMateriasFull.find(m => m.nome === escolhida);
         const panel = document.getElementById('detalhesMateria');
+        
         if(info) {
             panel.classList.remove('hidden');
             document.getElementById('txtProf').textContent = info.prof;
             document.getElementById('txtHora').textContent = info.hora;
-            document.getElementById('txtVagas').textContent = info.total;
+            
+            const ocupadas = vagasOcupadasGlobal[escolhida] || 0;
+            const restam = info.vagas - ocupadas;
+            const txtV = document.getElementById('txtVagas');
+            
+            txtV.textContent = restam > 0 ? restam : "ESGOTADA";
+            txtV.style.color = restam <= 5 ? "#dc2626" : "#16a34a";
         } else {
             panel.classList.add('hidden');
         }
@@ -204,36 +189,37 @@
     }
 
     function finalizarMatricula() {
-    const dados = {
-        curso: document.getElementById('curso').value,
-        materia: document.getElementById('materia').value,
-        nome: document.getElementById('nomeAluno').value,
-        matricula: document.getElementById('matricula').value,
-        telefone: document.getElementById('telefone').value,
-        nascimento: document.getElementById('nascimento').value
-    };
+        const dados = {
+            curso: document.getElementById('curso').value,
+            materia: document.getElementById('materia').value,
+            nome: document.getElementById('nomeAluno').value,
+            matricula: document.getElementById('matricula').value,
+            telefone: document.getElementById('telefone').value,
+            nascimento: document.getElementById('nascimento').value
+        };
 
-    if(!dados.curso || !dados.materia || !dados.nome) {
-        alert("Por favor, preencha todos os campos obrigatórios.");
-        return;
+        if(!dados.curso || !dados.materia || !dados.nome) {
+            alert("Preencha todos os campos.");
+            return;
+        }
+
+        document.getElementById('btnConfirmar').disabled = true;
+        document.getElementById('btnConfirmar').innerText = "Enviando...";
+
+        google.script.run
+            .withSuccessHandler(function(res) {
+                alert("Inscrição confirmada com sucesso!");
+                setTimeout(function(){
+                  window.top.location.href = "https://script.google.com/macros/s/AKfycbwK64uVjmMrj9KnRsJ_SJ-p_25_MfcfmTmyGQ6cvI5AyGnCROkooS9iPeF88GCWbjAVdQ/exec";
+                }, 500);
+            })
+            .withFailureHandler(function(err) {
+                alert("Erro ao salvar: " + err);
+                document.getElementById('btnConfirmar').disabled = false;
+                document.getElementById('btnConfirmar').innerText = "Confirmar Cadastro";
+            })
+            .processarInscricao(dados);
     }
-
-    // Desativa o botão para evitar cliques duplos
-    document.getElementById('btnConfirmar').disabled = true;
-    document.getElementById('btnConfirmar').innerText = "Enviando...";
-
-    // Chama a função do Apps Script
-    google.script.run
-        .withSuccessHandler(function(res) {
-            alert(res);
-            location.reload();
-        })
-        .withFailureHandler(function(err) {
-            alert("Erro ao salvar: " + err);
-            document.getElementById('btnConfirmar').disabled = false;
-        })
-        .processarInscricao(dados);
-}
 </script>
 </body>
 </html>
