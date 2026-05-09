@@ -436,6 +436,9 @@ function parseAndRender(json) {
     const horario   = cell(ci.horario);
     const monitor   = cell(ci.monitor);
     if (!aluno) continue; // skip empty rows
+    // Skip header row if Google returned it as data
+    const alunoLower = aluno.toLowerCase();
+    if (alunoLower === 'aluno' || alunoLower === 'aluno(a)' || alunoLower === 'nome') continue;
 
     if (!groups.has(materia)) {
       groups.set(materia, { materia, professor, horario, monitor, alunos: [] });
