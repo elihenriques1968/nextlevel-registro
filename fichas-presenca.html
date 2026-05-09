@@ -331,24 +331,64 @@ async function loadSheet() {
 
   if (!id) { showError('Informe o ID da planilha.'); return; }
 
-  // Show loading
   document.getElementById('loadingScreen').style.display = 'flex';
   hideConfig();
 
-  const url = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}`;
+  // Try multiple URL formats to handle encoding issues
+  const urls = [
+    `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}`,
+    `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${tab.replace(/ /g,'%20')}`,
+    `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json`,
+  ];
 
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Erro ao buscar planilha. Verifique o ID e as permissões.');
-    const text = await res.text();
-    // Google wraps the JSON in a callback
-    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-    parseAndRender(json);
-  } catch(e) {
-    document.getElementById('loadingScreen').style.display = 'none';
-    showConfig();
-    showError(e.message || 'Erro desconhecido.');
+  let lastError = '';
+  for (const url of urls) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) { lastError = 'HTTP ' + res.status; continue; }
+      const text = await res.text();
+      
+      // Debug: log raw response
+      console.log('Raw response (first 300):', text.substring(0, 300));
+      
+      // Google wraps JSON in callback — try multiple patterns
+      let jsonStr = null;
+      const patterns = [
+        /google\.visualization\.Query\.setResponse\(([\s\S]*)\)/,
+        /setResponse\(([\s\S]*)\)/,
+        /\/\*O\*\/([\s\S]*?)\/\*D\*\//,
+      ];
+      for (const pat of patterns) {
+        const m = text.match(pat);
+        if (m) { jsonStr = m[1]; break; }
+      }
+      
+      if (!jsonStr) {
+        // Maybe it returned pure JSON
+        jsonStr = text;
+      }
+      
+      // Remove trailing ); if present
+      jsonStr = jsonStr.replace(/\s*\)\s*;?\s*$/, '').trim();
+      
+      const json = JSON.parse(jsonStr);
+      
+      if (!json.table || !json.table.rows || json.table.rows.length === 0) {
+        lastError = 'Tabela vazia ou sem linhas de dados.';
+        continue;
+      }
+      
+      parseAndRender(json);
+      return;
+    } catch(e) {
+      console.error('URL failed:', url, e);
+      lastError = e.message;
+    }
   }
+  
+  document.getElementById('loadingScreen').style.display = 'none';
+  showConfig();
+  showError('Erro ao carregar: ' + lastError + '. Verifique o ID e se a planilha está pública.');
 }
 
 function showError(msg) {
@@ -358,17 +398,33 @@ function showError(msg) {
 }
 
 function parseAndRender(json) {
-  const cols = json.table.cols.map(c => c.label.trim().toLowerCase());
+  // Google sometimes uses 'label' or 'id' for column names
+  const cols = json.table.cols.map(c => (c.label || c.id || '').trim().toLowerCase());
+  console.log('Columns found:', cols);
   const rows = json.table.rows || [];
+  console.log('Rows found:', rows.length);
 
-  // Map column indices
+  // Map column indices — flexible matching
+  const normalize = s => s.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove accents
+    .trim();
+
+  const colsNorm = cols.map(normalize);
   const ci = {
-    aluno:     cols.findIndex(c => c.includes('aluno')),
-    professor: cols.findIndex(c => c.includes('professor')),
-    materia:   cols.findIndex(c => c.includes('materia') || c.includes('matéria')),
-    horario:   cols.findIndex(c => c.includes('horario') || c.includes('horário')),
-    monitor:   cols.findIndex(c => c.includes('monitor')),
+    aluno:     colsNorm.findIndex(c => c.includes('aluno')),
+    professor: colsNorm.findIndex(c => c.includes('professor')),
+    materia:   colsNorm.findIndex(c => c.includes('materia')),
+    horario:   colsNorm.findIndex(c => c.includes('horario')),
+    monitor:   colsNorm.findIndex(c => c.includes('monitor')),
   };
+  console.log('Column indices:', ci);
+  
+  // Fallback: if labels empty, use positional (A=0,B=1,C=2,D=3,E=4)
+  if (ci.aluno === -1) ci.aluno = 0;
+  if (ci.professor === -1) ci.professor = 1;
+  if (ci.materia === -1) ci.materia = 2;
+  if (ci.horario === -1) ci.horario = 3;
+  if (ci.monitor === -1) ci.monitor = 4;
 
   // Build groups keyed by materia
   const groups = new Map();
