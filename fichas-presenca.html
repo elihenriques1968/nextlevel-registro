@@ -328,22 +328,7 @@ async function loadSheet() {
   const tab = document.getElementById('sheetTab').value.trim() || 'Ficha 1';
   const err = document.getElementById('configError');
   err.style.display = 'none';
-  async function loadSheet() {
-  // 1. Pega o que está escrito na caixa
-  let idDigitado = document.getElementById('sheetId').value.trim();
-  
-  // 2. Define a parte fixa (Coloquei o seu ID base aqui)
-  const idBase = "1QtGrQ0PGSKRRzHtOoNa8no0O7pKJhrF3d6KPBagJgw";
-  
-  // 3. A MÁGICA: Se você digitou só 2 ou 3 letras (como wU), ele completa.
-  // Se você já deixou o código todo lá, ele mantém o código todo.
-  let id = (idDigitado.length <= 5) ? idBase + idDigitado : idDigitado;
 
-  const tab = document.getElementById('sheetTab').value.trim() || 'Ficha 1';
-  const err = document.getElementById('configError');
-  err.style.display = 'none';
-
-  // AQUELA LINHA QUE VOCÊ CITOU: Agora ela verifica o "id" já montado
   if (!id) { showError('Informe o ID da planilha.'); return; }
 
   document.getElementById('loadingScreen').style.display = 'flex';
