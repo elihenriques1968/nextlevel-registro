@@ -306,10 +306,9 @@ td.col-result .cell-input { font-weight: 600; font-size: 11.5px; text-align: cen
   <div class="page-dots" id="pageDots"></div>
   <button class="btn-nav" onclick="navigate(1)" id="btnNext2" disabled>›</button>
 </div>
-  <img src="Logo_Min_Ensino_Novo.png" alt="Logo">
-  <img src="Logo_Save_novo.png" alt="Logo2">
+
 <script>
-// ── LOGOS (base64 embedded) ──
+// ── DATA ──
 let pages = [];
 let current = 0;
 
@@ -332,7 +331,6 @@ async function loadSheet() {
   document.getElementById('loadingScreen').style.display = 'flex';
   hideConfig();
 
-  // Try multiple URL formats to handle encoding issues
   const urls = [
     `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}`,
     `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${tab.replace(/ /g,'%20')}`,
@@ -346,10 +344,6 @@ async function loadSheet() {
       if (!res.ok) { lastError = 'HTTP ' + res.status; continue; }
       const text = await res.text();
       
-      // Debug: log raw response
-      console.log('Raw response (first 300):', text.substring(0, 300));
-      
-      // Google wraps JSON in callback — try multiple patterns
       let jsonStr = null;
       const patterns = [
         /google\.visualization\.Query\.setResponse\(([\s\S]*)\)/,
@@ -361,14 +355,8 @@ async function loadSheet() {
         if (m) { jsonStr = m[1]; break; }
       }
       
-      if (!jsonStr) {
-        // Maybe it returned pure JSON
-        jsonStr = text;
-      }
-      
-      // Remove trailing ); if present
+      if (!jsonStr) jsonStr = text;
       jsonStr = jsonStr.replace(/\s*\)\s*;?\s*$/, '').trim();
-      
       const json = JSON.parse(jsonStr);
       
       if (!json.table || !json.table.rows || json.table.rows.length === 0) {
@@ -396,15 +384,11 @@ function showError(msg) {
 }
 
 function parseAndRender(json) {
-  // Google sometimes uses 'label' or 'id' for column names
   const cols = json.table.cols.map(c => (c.label || c.id || '').trim().toLowerCase());
-  console.log('Columns found:', cols);
   const rows = json.table.rows || [];
-  console.log('Rows found:', rows.length);
 
-  // Map column indices — flexible matching
   const normalize = s => s.toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove accents
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .trim();
 
   const colsNorm = cols.map(normalize);
@@ -415,16 +399,13 @@ function parseAndRender(json) {
     horario:   colsNorm.findIndex(c => c.includes('horario')),
     monitor:   colsNorm.findIndex(c => c.includes('monitor')),
   };
-  console.log('Column indices:', ci);
   
-  // Fallback: if labels empty, use positional (A=0,B=1,C=2,D=3,E=4)
   if (ci.aluno === -1) ci.aluno = 0;
   if (ci.professor === -1) ci.professor = 1;
   if (ci.materia === -1) ci.materia = 2;
   if (ci.horario === -1) ci.horario = 3;
   if (ci.monitor === -1) ci.monitor = 4;
 
-  // Build groups keyed by materia
   const groups = new Map();
   for (const row of rows) {
     const cell = (i) => (i >= 0 && row.c[i] && row.c[i].v != null) ? String(row.c[i].v).trim() : '';
@@ -433,8 +414,7 @@ function parseAndRender(json) {
     const professor = cell(ci.professor);
     const horario   = cell(ci.horario);
     const monitor   = cell(ci.monitor);
-    if (!aluno) continue; // skip empty rows
-    // Skip header row if Google returned it as data
+    if (!aluno) continue;
     const alunoLower = aluno.toLowerCase();
     if (alunoLower === 'aluno' || alunoLower === 'aluno(a)' || alunoLower === 'nome') continue;
 
@@ -464,14 +444,12 @@ function renderPages(groups) {
   dots.innerHTML = '';
 
   groups.forEach((g, idx) => {
-    // Page div
     const page = document.createElement('div');
     page.className = 'page' + (idx === 0 ? ' active' : '');
     page.id = 'page-' + idx;
     page.innerHTML = buildSheetHTML(g, idx);
     wrap.appendChild(page);
 
-    // Dot
     const dot = document.createElement('button');
     dot.className = 'dot' + (idx === 0 ? ' active' : '');
     dot.title = g.materia;
@@ -487,13 +465,12 @@ function renderPages(groups) {
 }
 
 function buildSheetHTML(g, idx) {
-  // Build student rows
-  let rows = '';
-  const count = Math.max(g.alunos.length, 10); // at least 10 rows
+  let rowsHtml = '';
+  const count = Math.max(g.alunos.length, 10);
   for (let i = 0; i < count; i++) {
     const name = g.alunos[i] || '';
     const bg = i % 2 === 0 ? '' : 'style="background:var(--row-alt)"';
-    rows += `
+    rowsHtml += `
     <tr ${bg}>
       <td class="col-num">${i + 1}</td>
       <td class="col-name" style="padding-left:10px;font-weight:500;">${escHtml(name)}</td>
@@ -510,12 +487,13 @@ function buildSheetHTML(g, idx) {
   return `
   <div class="sheet">
     <div class="sheet-header">
-      <img class="logo-img" src="Logo_Min_Ensino_Novo.png" alt="Save The Nations">      <div class="header-center">
+      <img class="logo-img" src="Logo_Min_Ensino_Novo.png" alt="Ministério de Ensino">
+      <div class="header-center">
         <div class="org-sub">Save the Nations Brasil</div>
         <div class="next-level-badge">NEXT LEVEL<span class="sub">MINISTÉRIO DE ENSINO</span></div>
       </div>
-      <img class="logo-img" src="Logo_Save_novo.png" alt="Save The Nations2">
-      </div>
+      <img class="logo-img" src="Logo_Save_novo.png" alt="Save The Nations">
+    </div>
     <div class="meta-band">
       <div class="meta-field">
         <span class="meta-label">Disciplina:</span>
@@ -549,7 +527,7 @@ function buildSheetHTML(g, idx) {
             <th style="width:84px;">Resultado</th>
           </tr>
         </thead>
-        <tbody>${rows}</tbody>
+        <tbody>${rowsHtml}</tbody>
       </table>
     </div>
     <div class="add-row-strip">
@@ -613,12 +591,12 @@ function addRowToPage(idx) {
 // ── KEYBOARD ──
 document.addEventListener('keydown', e => {
   if (document.getElementById('configPanel').style.display !== 'none') return;
-  if (e.target.tagName === 'INPUT') return; // don't nav while typing
+  if (e.target.tagName === 'INPUT') return;
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown')  navigate(1);
   if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')    navigate(-1);
 });
 
-// ── PRINT: show all pages ──
+// ── PRINT ──
 window.addEventListener('beforeprint', () => {
   document.querySelectorAll('.page').forEach(p => p.classList.add('active'));
 });
