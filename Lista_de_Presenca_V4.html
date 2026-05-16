@@ -229,74 +229,73 @@
     }
   }
 
-  // NOVA FUNÇÃO AJAX: Dispara a consulta quando o monitor muda
-  async function buscarDadosDoMonitor() {
-    const monitorNome = document.getElementById("monitor").value;
-    if (!monitorNome) return;
+// NOVA FUNÇÃO AJAX: Dispara a consulta quando o monitor muda
+async function buscarDadosDoMonitor() {
+  const monitorNome = document.getElementById("monitor").value;
+  if (!monitorNome) return;
 
-    const loading = document.getElementById("loading");
-    loading.style.display = "block";
-    loading.textContent = "⏳ Buscando alunos e informações da turma...";
-    document.getElementById("msg").style.display = "none";
+  const loading = document.getElementById("loading");
+  loading.style.display = "block";
+  loading.textContent = "⏳ Buscando alunos e informações da turma...";
+  document.getElementById("msg").style.display = "none";
 
-    try {
-      const resposta = await fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "cors", // Ajustado para ler a resposta JSON do Google Script se configurado
-        headers: { "Content-Type": "text/plain" }, // O Apps Script gerencia melhor text/plain bruto em chamadas cross-origin simples
-        body: JSON.stringify({ acao: "buscarMonitor", monitor: monitorNome })
-      });
-      
-      const dados = await resposta.json();
-      loading.style.display = "none";
+  try {
+    const resposta = await fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "cors", // Ajustado para ler a resposta JSON do Google Script se configurado
+      headers: { "Content-Type": "text/plain" }, // O Apps Script gerencia melhor text/plain bruto em chamadas cross-origin simples
+      body: JSON.stringify({ acao: "buscarMonitor", monitor: monitorNome })
+    });
+    
+    const dados = await resposta.json();
+    loading.style.display = "none";
 
-      if (dados.erro) {
-        mostrarMsg("error", "⚠️ " + dados.erro);
-        return;
-      }
+    if (dados.erro) {
+      mostrarMsg("error", "⚠️ " + dados.erro);
+      return;
+    }
 
-      // Preenche os campos superiores (Tudo continua editável pelo usuário)
-      if(dados.curso) {
-        document.getElementById("curso").value = dados.curso;
-        atualizarMaterias(); // Atualiza a lista suspensa de matérias com base no curso
-      }
-      if(dados.materia) document.getElementById("materia").value = dados.materia;
-      
-      // Procura e seleciona o professor na lista usando correspondência parcial simples
-      if(dados.professor) {
-        const selectProf = document.getElementById("professor");
-        for (let idx = 0; idx < selectProf.options.length; idx++) {
-          if (selectProf.options[idx].text.includes(dados.professor) || dados.professor.includes(selectProf.options[idx].text)) {
-            selectProf.selectedIndex = idx;
-            break;
-          }
+    // Preenche os campos superiores (Tudo continua editável pelo usuário)
+    if(dados.curso) {
+      document.getElementById("curso").value = dados.curso;
+      atualizarMaterias(); // Atualiza a lista suspensa de matérias com base no curso
+    }
+    if(dados.materia) document.getElementById("materia").value = dados.materia;
+    
+    // Procura e seleciona o professor na lista usando correspondência parcial simples
+    if(dados.professor) {
+      const selectProf = document.getElementById("professor");
+      for (let idx = 0; idx < selectProf.options.length; idx++) {
+        if (selectProf.options[idx].text.includes(dados.professor) || dados.professor.includes(selectProf.options[idx].text)) {
+          selectProf.selectedIndex = idx;
+          break;
         }
       }
-
-      // Limpa e reinicia as 30 linhas padrão
-      gerarLinhas();
-
-      // Aloca a lista de alunos retornados nas primeiras linhas do formulário
-      if (dados.alunos && dados.alunos.length > 0) {
-        dados.alunos.forEach((nomeAluno, index) => {
-          if (index < 30) { // Limite do formulário visual de 30 campos
-            document.getElementById(`nome_${index + 1}`).value = nomeAluno;
-          }
-        });
-        mostrarMsg("success", `✅ Dados da turma carregados! ${dados.alunos.length} aluno(s) encontrado(s).`);
-      } else {
-        mostrarMsg("error", "ℹ️ Ninguém inscrito nesta matéria ainda. Você pode digitar os nomes manualmente.");
-      }
-
-    } catch (e) {
-      loading.style.display = "none";
-      // Fallback amigável: Se o bloqueio de CORS do Github/Google impedir a leitura do JSON direto, 
-      // avisamos o usuário, mas mantemos o sistema livre para digitação.
-      mostrarMsg("error", "O servidor processou a requisição. Se os nomes não carregaram automaticamente devido ao CORS, preencha-os livremente.");
-      console.error(e);
     }
-  }
 
+    // Limpa e reinicia as 30 linhas padrão
+    gerarLinhas();
+
+    // Aloca a lista de alunos retornados nas primeiras linhas do formulário
+    if (dados.alunos && dados.alunos.length > 0) {
+      dados.alunos.forEach((nomeAluno, index) => {
+        if (index < 30) { // Limite do formulário visual de 30 campos
+          document.getElementById(`nome_${index + 1}`).value = nomeAluno;
+        }
+      });
+      mostrarMsg("success", `✅ Dados da turma carregados! ${dados.alunos.length} aluno(s) encontrado(s).`);
+    } else {
+      mostrarMsg("error", "ℹ️ Ninguém inscrito nesta matéria ainda. Você pode digitar os nomes manualmente.");
+    }
+
+  } catch (e) {
+    loading.style.display = "none";
+    // Fallback amigável: Se o bloqueio de CORS do Github/Google impedir a leitura do JSON direto, 
+    // avisamos o usuário, mas mantemos o sistema livre para digitação.
+    mostrarMsg("error", "O servidor processou a requisição. Se os nomes não carregaram automaticamente devido ao CORS, preencha-os livremente.");
+    console.error(e);
+  }
+}
   function mostrarMsg(tipo, texto) {
     const el = document.getElementById("msg");
     el.className = "msg " + tipo;
