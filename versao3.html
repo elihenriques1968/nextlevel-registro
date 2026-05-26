@@ -151,17 +151,16 @@
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhiWg-94orW-B__luNZRkOzbt1fY-x-0tiawgHqIaTYvQE0ce83229q2jXglKguouQ/exec";
-
   let baseDadosPlanilha = {};
 
-  // Busca as turmas e alunos direto da planilha quando a página abre
+  // Busca as turmas e alunos direto da planilha usando a rota padrão
   window.onload = async function() {
     const monitorSel = document.getElementById("monitor");
     try {
       const response = await fetch(SCRIPT_URL);
       const data = await response.json();
       
-      if(data.error) {
+      if (data.error) {
         monitorSel.innerHTML = '<option value="">Erro ao carregar dados da Planilha</option>';
         return;
       }
@@ -185,12 +184,17 @@
 
       document.getElementById("btnCadastrar").disabled = false;
     } catch(e) {
+      console.error("Erro na requisição:", e);
       monitorSel.innerHTML = '<option value="">Erro de conexão com o banco de dados</option>';
     }
   };
 
-  // Garante a função de prompt no escopo global
-  window.verificarAcessoAdmin = function() {
+  // Garante a abertura do Prompt com prioridade máxima no clique
+  window.verificarAcessoAdmin = function(e) {
+    if(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     const senha = prompt("Digite a senha do administrador:");
     if (senha === "nextlevel2026") {
       document.getElementById("painel-admin").style.display = "block";
@@ -199,7 +203,6 @@
       alert("Senha incorreta!");
     }
   };
-
   window.fecharPainelAdmin = function() {
     document.getElementById("painel-admin").style.display = "none";
   };
