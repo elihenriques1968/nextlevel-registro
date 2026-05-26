@@ -46,119 +46,367 @@
 
   .loading { display: none; text-align: center; color: #2E6EA6; font-size: 13px; margin-top: 10px; }
 
+  /* ══════════════════════════════════════════
+     TELA DE BLOQUEIO
+  ══════════════════════════════════════════ */
+  #tela-bloqueio {
+    display: none;
+    background: white;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0 0 12px 12px;
+    padding: 48px 24px;
+    text-align: center;
+  }
+  .bloqueio-icone { font-size: 56px; margin-bottom: 16px; }
+  .bloqueio-titulo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1A3A5C;
+    margin-bottom: 10px;
+  }
+  .bloqueio-msg {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.7;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .bloqueio-badge {
+    display: inline-block;
+    margin-top: 22px;
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffc107;
+    border-radius: 20px;
+    padding: 6px 18px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  /* ══════════════════════════════════════════
+     MODAL DE SENHA ADMIN
+  ══════════════════════════════════════════ */
+  #modal-senha {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+  }
+  #modal-senha.ativo { display: flex; }
+  .modal-box {
+    background: white;
+    border-radius: 14px;
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+    text-align: center;
+  }
+  .modal-box h2 { font-size: 17px; color: #1A3A5C; margin-bottom: 6px; }
+  .modal-box p  { font-size: 12px; color: #888; margin-bottom: 18px; }
+  .modal-box input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    outline: none;
+  }
+  .modal-box input:focus { border-color: #2E6EA6; }
+  .modal-box input.erro-campo { border-color: #dc3545; }
+  .modal-btn-row { display: flex; gap: 10px; }
+  .modal-btn-row button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .btn-entrar { background: #1A3A5C; color: white; }
+  .btn-entrar:hover { background: #12283f; }
+  .btn-cancelar { background: #eee; color: #555; }
+  .btn-cancelar:hover { background: #ddd; }
+  .modal-erro { color: #dc3545; font-size: 12px; margin-top: 6px; min-height: 18px; }
+
+  /* ══════════════════════════════════════════
+     PAINEL ADMIN
+  ══════════════════════════════════════════ */
+  #painel-admin {
+    display: none;
+    background: white;
+    border: 2px solid #1A3A5C;
+    border-radius: 12px;
+    margin-top: 18px;
+    overflow: hidden;
+  }
+  .admin-header {
+    background: #1A3A5C;
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .admin-header h3 { font-size: 14px; }
+  .btn-fechar-admin {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .btn-fechar-admin:hover { background: rgba(255,255,255,0.28); }
+  .admin-corpo { padding: 22px 24px; }
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 18px;
+  }
+  .status-badge.aberto  { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+  .status-badge.fechado { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  .status-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .status-badge.aberto  .status-dot { background: #28a745; }
+  .status-badge.fechado .status-dot { background: #dc3545; }
+
+  .admin-desc { font-size: 12px; color: #666; margin-bottom: 20px; line-height: 1.5; }
+  .btn-toggle-sistema {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    letter-spacing: 0.4px;
+    transition: background 0.2s;
+  }
+  .btn-toggle-sistema.fechar-btn { background: #dc3545; color: white; }
+  .btn-toggle-sistema.fechar-btn:hover { background: #b02a37; }
+  .btn-toggle-sistema.abrir-btn  { background: #1E8035; color: white; }
+  .btn-toggle-sistema.abrir-btn:hover  { background: #155c27; }
+  .btn-toggle-sistema:disabled { background: #aaa; cursor: not-allowed; }
+
+  .admin-loading { text-align: center; color: #2E6EA6; font-size: 12px; margin-top: 10px; display: none; }
+  .admin-msg { font-size: 12px; margin-top: 10px; padding: 8px 12px; border-radius: 6px; display: none; }
+  .admin-msg.ok  { background: #d4edda; color: #155724; display: block; }
+  .admin-msg.err { background: #f8d7da; color: #721c24; display: block; }
+
+  /* Gatilho oculto no footer */
+  #gatilho-admin {
+    cursor: default;
+    user-select: none;
+  }
+
   @media(max-width: 600px) {
     .row { flex-direction: column; gap: 8px; }
     .card { padding: 14px 12px; }
     .alunos-header span { font-size: 10px; padding: 5px 4px; }
     .aluno-row input, .aluno-row select { font-size: 11px; padding: 6px 4px; }
+    .modal-box { margin: 0 16px; }
   }
 </style>
 </head>
 <body>
 <div class="container">
 
+  <!-- CABEÇALHO -->
   <div class="header">
     <h1>📋 Registro de Presença e Notas</h1>
     <p>Next Level · Gestão Acadêmica</p>
   </div>
   <div class="gold-bar"></div>
 
-  <div class="card">
-    <div class="section-title">▸ IDENTIFICAÇÃO DA TURMA</div>
-    <div class="row">
-      <div class="field">
-        <label>Monitor Principal *</label>
-        <select id="monitor" onchange="carregarTurmaPorMonitor()">
-          <option value="">Carregando monitores da planilha...</option>
-        </select>
-      </div>
+  <!-- ══ TELA DE BLOQUEIO (visível quando sistema está FECHADO) ══ -->
+  <div id="tela-bloqueio">
+    <div class="bloqueio-icone">🔒</div>
+    <div class="bloqueio-titulo">Sistema Temporariamente Fechado</div>
+    <div class="bloqueio-msg">
+      O sistema de registro de presença e notas está temporariamente indisponível.<br><br>
+      Aguarde o momento da reabertura para realizar o lançamento das presenças dos alunos.
     </div>
-    <div class="row">
-      <div class="field">
-        <label>Curso</label>
-        <input type="text" id="curso" readonly style="background: #e9ecef; color: #495057;">
-      </div>
-      <div class="field">
-        <label>Matéria</label>
-        <input type="text" id="materia" readonly style="background: #e9ecef; color: #495057;">
-      </div>
-      <div class="field">
-        <label>Professor</label>
-        <input type="text" id="professor" readonly style="background: #e9ecef; color: #495057;">
-      </div>
-    </div>
+    <div class="bloqueio-badge">⏳ Em breve o sistema estará disponível</div>
   </div>
 
-  <div class="card">
-    <div class="section-title">▸ REGISTRO DOS ALUNOS</div>
-    <div class="scroll-tabela">
-      <div class="scroll-tabela-inner">
-        <div class="alunos-header">
-          <span>Nome do Aluno</span>
-          <span>Aula 1</span>
-          <span>Aula 2</span>
-          <span>Aula 3</span>
-          <span>Aula 4</span>
-          <span>Nota Prova</span>
+  <!-- ══ CONTEÚDO PRINCIPAL DO SISTEMA ══ -->
+  <div id="conteudo-sistema">
+
+    <div class="card">
+      <div class="section-title">▸ IDENTIFICAÇÃO DA TURMA</div>
+      <div class="row">
+        <div class="field">
+          <label>Monitor Principal *</label>
+          <select id="monitor" onchange="carregarTurmaPorMonitor()">
+            <option value="">Carregando monitores da planilha...</option>
+          </select>
         </div>
-        <div id="lista-alunos"></div>
       </div>
+      <div class="row">
+        <div class="field">
+          <label>Curso</label>
+          <input type="text" id="curso" readonly style="background: #e9ecef; color: #495057;">
+        </div>
+        <div class="field">
+          <label>Matéria</label>
+          <input type="text" id="materia" readonly style="background: #e9ecef; color: #495057;">
+        </div>
+        <div class="field">
+          <label>Professor</label>
+          <input type="text" id="professor" readonly style="background: #e9ecef; color: #495057;">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">▸ REGISTRO DOS ALUNOS</div>
+      <div class="scroll-tabela">
+        <div class="scroll-tabela-inner">
+          <div class="alunos-header">
+            <span>Nome do Aluno</span>
+            <span>Aula 1</span>
+            <span>Aula 2</span>
+            <span>Aula 3</span>
+            <span>Aula 4</span>
+            <span>Nota Prova</span>
+          </div>
+          <div id="lista-alunos"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <button class="btn-cadastrar" onclick="cadastrar()" id="btnCadastrar" disabled>✅ CADASTRAR</button>
+      <div class="loading" id="loading">⏳ Processando, aguarde...</div>
+      <div class="msg" id="msg"></div>
+    </div>
+
+  </div><!-- fim #conteudo-sistema -->
+
+  <!-- FOOTER com gatilho oculto -->
+  <div class="footer">
+    ℹ️ Selecione o Monitor para carregar as informações diretamente da planilha institucional.
+    &nbsp;&nbsp;
+    <span id="gatilho-admin" onclick="contarCliqueAdmin()" title="">·</span>
+  </div>
+
+  <!-- PAINEL ADMIN (aparece abaixo do footer após autenticação) -->
+  <div id="painel-admin">
+    <div class="admin-header">
+      <h3>🔐 Painel Administrativo — Controle do Sistema</h3>
+      <button class="btn-fechar-admin" onclick="fecharPainelAdmin()">✕ Fechar</button>
+    </div>
+    <div class="admin-corpo">
+      <div id="status-sistema-badge" class="status-badge aberto">
+        <span class="status-dot"></span>
+        <span id="status-texto">Sistema ABERTO</span>
+      </div>
+      <p class="admin-desc">
+        Use o botão abaixo para controlar o acesso ao sistema de registro.<br>
+        Quando <strong>fechado</strong>, os monitores verão uma mensagem de indisponibilidade
+        e não conseguirão realizar lançamentos.
+      </p>
+      <button id="btn-toggle" class="btn-toggle-sistema fechar-btn" onclick="alternarSistema()">
+        🔒 FECHAR O SISTEMA AGORA
+      </button>
+      <div class="admin-loading" id="admin-loading">⏳ Atualizando na planilha...</div>
+      <div class="admin-msg" id="admin-msg"></div>
     </div>
   </div>
 
-  <div class="card">
-    <button class="btn-cadastrar" onclick="cadastrar()" id="btnCadastrar" disabled>✅ CADASTRAR</button>
-    <div class="loading" id="loading">⏳ Processando, aguarde...</div>
-    <div class="msg" id="msg"></div>
-  </div>
+</div><!-- fim .container -->
 
-  <div class="footer">ℹ️ Selecione o Monitor para carregar as informações diretamente da planilha institucional.</div>
+<!-- MODAL DE SENHA -->
+<div id="modal-senha">
+  <div class="modal-box">
+    <h2>🔐 Acesso Restrito</h2>
+    <p>Digite a senha para acessar o painel administrativo</p>
+    <input type="password" id="campo-senha" placeholder="••••••••••••"
+           onkeydown="if(event.key==='Enter') confirmarSenha()">
+    <div class="modal-btn-row">
+      <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-entrar"   onclick="confirmarSenha()">Entrar</button>
+    </div>
+    <div class="modal-erro" id="modal-erro"></div>
+  </div>
 </div>
 
 <script>
-  // INSIRA AQUI A SUA URL GERADA NO PASSO ANTERIOR
+  // ─────────────────────────────────────────────────────────
+  //  CONFIGURAÇÃO
+  // ─────────────────────────────────────────────────────────
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhiWg-94orW-B__luNZRkOzbt1fY-x-0tiawgHqIaTYvQE0ce83229q2jXglKguouQ/exec";
+  const SENHA_ADMIN = "nextlevel2026";
 
   let baseDadosPlanilha = {};
+  let statusAtual = "ABERTO"; // reflete o estado real da planilha
 
- // Busca as turmas e alunos direto da planilha quando a página abre
+  // ─────────────────────────────────────────────────────────
+  //  INICIALIZAÇÃO — carrega dados + verifica status do sistema
+  // ─────────────────────────────────────────────────────────
   window.onload = async function() {
     const monitorSel = document.getElementById("monitor");
     try {
       const response = await fetch(SCRIPT_URL);
       const data = await response.json();
-      
-      if(data.error) {
+
+      if (data.error) {
         monitorSel.innerHTML = '<option value="">Erro ao carregar dados da Planilha</option>';
         return;
       }
 
-      // VERIFICAÇÃO DE LOCKOUT: Se a planilha retornar que está fechado, oculta o formulário e exibe o aviso
+      // ── VERIFICAÇÃO DE LOCKOUT ──
       if (data.statusSistema === "FECHADO") {
         document.getElementById("conteudo-sistema").style.display = "none";
         document.getElementById("tela-bloqueio").style.display = "block";
-        return; 
+        statusAtual = "FECHADO";
+        sincronizarBotaoAdmin();
+        return;
       }
 
+      // Sistema aberto: carrega monitores normalmente
+      statusAtual = "ABERTO";
       baseDadosPlanilha = data.base;
       monitorSel.innerHTML = '<option value="">Selecione o Monitor...</option>';
-      
+
       Object.keys(baseDadosPlanilha).sort().forEach(monitor => {
         const opt = document.createElement("option");
         opt.value = monitor;
         opt.textContent = monitor;
-        monitorSel.appendChild(opt); // <-- CORRIGIDO: Anexa o elemento corretamente no select
+        monitorSel.appendChild(opt);
       });
 
       document.getElementById("btnCadastrar").disabled = false;
+
     } catch(e) {
       monitorSel.innerHTML = '<option value="">Erro de conexão com o banco de dados</option>';
     }
   };
+
+  // ─────────────────────────────────────────────────────────
+  //  FORMULÁRIO — carregar turma e cadastrar
+  // ─────────────────────────────────────────────────────────
   function carregarTurmaPorMonitor() {
     const monitorSel = document.getElementById("monitor").value;
-    
-    // Reseta campos
     document.getElementById("curso").value = "";
     document.getElementById("materia").value = "";
     document.getElementById("professor").value = "";
@@ -168,47 +416,36 @@
     if (!monitorSel || !baseDadosPlanilha[monitorSel]) return;
 
     const dadosTurma = baseDadosPlanilha[monitorSel];
-    
-    // Preenche cabeçalho estático vindo da planilha
     document.getElementById("curso").value = dadosTurma.curso;
     document.getElementById("materia").value = dadosTurma.materia;
     document.getElementById("professor").value = dadosTurma.professor;
 
-    // Desenha as 30 linhas injetando os alunos existentes nas primeiras posições
     const alunosInscritos = dadosTurma.alunos || [];
     for (let i = 1; i <= 30; i++) {
-      const nomeAluno = alunosInscritos[i - 1] || ""; // Pega o aluno ou deixa vazio se passar do limite
+      const nomeAluno = alunosInscritos[i - 1] || "";
       const div = document.createElement("div");
       div.className = "aluno-row";
       div.innerHTML = `
         <input type="text" placeholder="Nome do aluno ${i}" id="nome_${i}" value="${nomeAluno}" autocomplete="off">
         <select id="aula1_${i}">
           <option value="">-</option>
-          <option>Presente</option>
-          <option>Ausente</option>
-          <option>Justificado</option>
-          <option>Não houve</option>
+          <option>Presente</option><option>Ausente</option>
+          <option>Justificado</option><option>Não houve</option>
         </select>
         <select id="aula2_${i}">
           <option value="">-</option>
-          <option>Presente</option>
-          <option>Ausente</option>
-          <option>Justificado</option>
-          <option>Não houve</option>
+          <option>Presente</option><option>Ausente</option>
+          <option>Justificado</option><option>Não houve</option>
         </select>
         <select id="aula3_${i}">
           <option value="">-</option>
-          <option>Presente</option>
-          <option>Ausente</option>
-          <option>Justificado</option>
-          <option>Não houve</option>
+          <option>Presente</option><option>Ausente</option>
+          <option>Justificado</option><option>Não houve</option>
         </select>
         <select id="aula4_${i}">
           <option value="">-</option>
-          <option>Presente</option>
-          <option>Ausente</option>
-          <option>Justificado</option>
-          <option>Não houve</option>
+          <option>Presente</option><option>Ausente</option>
+          <option>Justificado</option><option>Não houve</option>
         </select>
         <input type="number" placeholder="0.0" step="0.1" min="0" max="10" id="notaP_${i}">
       `;
@@ -257,8 +494,8 @@
 
     const btn     = document.getElementById("btnCadastrar");
     const loading = document.getElementById("loading");
-    btn.disabled           = true;
-    loading.style.display  = "block";
+    btn.disabled = true;
+    loading.style.display = "block";
     document.getElementById("msg").className = "msg";
 
     const ts = new Date().toLocaleString("pt-BR");
@@ -268,19 +505,18 @@
       const a = alunos[idx];
       const payload = {
         "Número":        idx + 1,
-        "Timestamp":      ts,
-        "Curso":          curso,
-        "Matéria":        materia,
-        "Professor":      professor,
-        "Monitor":        monitor,
-        "Nome do Aluno":  a.nome,
-        "Aula1_val":      a.aula1,
-        "Aula2_val":      a.aula2,
-        "Aula3_val":      a.aula3,
-        "Aula4_val":      a.aula4,
-        "Nota Prova":     a.notaP ? parseFloat(a.notaP) : ""
+        "Timestamp":     ts,
+        "Curso":         curso,
+        "Matéria":       materia,
+        "Professor":     professor,
+        "Monitor":       monitor,
+        "Nome do Aluno": a.nome,
+        "Aula1_val":     a.aula1,
+        "Aula2_val":     a.aula2,
+        "Aula3_val":     a.aula3,
+        "Aula4_val":     a.aula4,
+        "Nota Prova":    a.notaP ? parseFloat(a.notaP) : ""
       };
-
       try {
         await fetch(SCRIPT_URL, {
           method: "POST",
@@ -288,9 +524,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
-      } catch(e) {
-        erros++;
-      }
+      } catch(e) { erros++; }
     }
 
     loading.style.display = "none";
@@ -298,10 +532,139 @@
 
     if (erros === 0) {
       mostrarMsg("success", `✅ Envio concluído! ${alunos.length} registros inseridos com sucesso na planilha.`);
-      carregarTurmaPorMonitor(); // Reseta os campos mantendo a lista original limpa
+      carregarTurmaPorMonitor();
     } else {
       mostrarMsg("error", `⚠️ Ocorreu um erro ao salvar alguns dados. Verifique a planilha.`);
     }
+  }
+
+  // ─────────────────────────────────────────────────────────
+  //  GATILHO OCULTO — 5 cliques rápidos no ponto do footer
+  // ─────────────────────────────────────────────────────────
+  let cliquesAdmin = 0;
+  let timerAdmin = null;
+
+  function contarCliqueAdmin() {
+    cliquesAdmin++;
+    clearTimeout(timerAdmin);
+    if (cliquesAdmin >= 5) {
+      cliquesAdmin = 0;
+      abrirModal();
+    } else {
+      timerAdmin = setTimeout(() => { cliquesAdmin = 0; }, 2000);
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────
+  //  MODAL DE SENHA
+  // ─────────────────────────────────────────────────────────
+  function abrirModal() {
+    const modal = document.getElementById("modal-senha");
+    const campo = document.getElementById("campo-senha");
+    const erro  = document.getElementById("modal-erro");
+    campo.value = "";
+    campo.classList.remove("erro-campo");
+    erro.textContent = "";
+    modal.classList.add("ativo");
+    setTimeout(() => campo.focus(), 100);
+  }
+
+  function fecharModal() {
+    document.getElementById("modal-senha").classList.remove("ativo");
+  }
+
+  function confirmarSenha() {
+    const campo = document.getElementById("campo-senha");
+    const erro  = document.getElementById("modal-erro");
+    if (campo.value === SENHA_ADMIN) {
+      fecharModal();
+      abrirPainelAdmin();
+    } else {
+      campo.classList.add("erro-campo");
+      erro.textContent = "❌ Senha incorreta. Tente novamente.";
+      campo.value = "";
+      campo.focus();
+    }
+  }
+
+  // Fecha modal ao clicar fora
+  document.getElementById("modal-senha").addEventListener("click", function(e) {
+    if (e.target === this) fecharModal();
+  });
+
+  // ─────────────────────────────────────────────────────────
+  //  PAINEL ADMIN
+  // ─────────────────────────────────────────────────────────
+  function abrirPainelAdmin() {
+    sincronizarBotaoAdmin();
+    document.getElementById("painel-admin").style.display = "block";
+    document.getElementById("painel-admin").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function fecharPainelAdmin() {
+    document.getElementById("painel-admin").style.display = "none";
+    document.getElementById("admin-msg").className = "admin-msg";
+  }
+
+  function sincronizarBotaoAdmin() {
+    const badge = document.getElementById("status-sistema-badge");
+    const texto = document.getElementById("status-texto");
+    const btn   = document.getElementById("btn-toggle");
+
+    if (statusAtual === "ABERTO") {
+      badge.className = "status-badge aberto";
+      texto.textContent = "Sistema ABERTO";
+      btn.className = "btn-toggle-sistema fechar-btn";
+      btn.textContent = "🔒 FECHAR O SISTEMA AGORA";
+    } else {
+      badge.className = "status-badge fechado";
+      texto.textContent = "Sistema FECHADO";
+      btn.className = "btn-toggle-sistema abrir-btn";
+      btn.textContent = "🔓 REABRIR O SISTEMA AGORA";
+    }
+  }
+
+  async function alternarSistema() {
+    const novoStatus = statusAtual === "ABERTO" ? "FECHADO" : "ABERTO";
+    const btn         = document.getElementById("btn-toggle");
+    const adminLoad   = document.getElementById("admin-loading");
+    const adminMsg    = document.getElementById("admin-msg");
+
+    btn.disabled = true;
+    adminLoad.style.display = "block";
+    adminMsg.className = "admin-msg";
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ acao: "SET_STATUS", status: novoStatus })
+      });
+
+      // Confirma localmente (no-cors não retorna resposta)
+      statusAtual = novoStatus;
+      sincronizarBotaoAdmin();
+
+      adminMsg.className = "admin-msg ok";
+      if (novoStatus === "FECHADO") {
+        adminMsg.textContent = "✅ Sistema fechado! Os monitores verão a tela de bloqueio.";
+        // Oculta o formulário e mostra bloqueio na mesma sessão
+        document.getElementById("conteudo-sistema").style.display = "none";
+        document.getElementById("tela-bloqueio").style.display = "block";
+      } else {
+        adminMsg.textContent = "✅ Sistema reaberto! Os monitores já podem acessar normalmente.";
+        document.getElementById("tela-bloqueio").style.display = "none";
+        document.getElementById("conteudo-sistema").style.display = "block";
+      }
+
+    } catch(e) {
+      adminMsg.className = "admin-msg err";
+      adminMsg.textContent = "❌ Erro ao atualizar. Verifique a conexão.";
+    }
+
+    adminLoad.style.display = "none";
+    btn.disabled = false;
   }
 </script>
 </body>
