@@ -46,77 +46,110 @@
 
   .loading { display: none; text-align: center; color: #2E6EA6; font-size: 13px; margin-top: 10px; }
 
+  /* NOVOS ELEMENTOS: Tela de Bloqueio Geral e Painel Admin */
+  #tela-bloqueio { display: none; text-align: center; padding: 40px 20px; background: white; border-radius: 12px; border: 1px solid #ddd; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-top: 20px; }
+  #tela-bloqueio h2 { color: #dc3545; font-size: 20px; margin-bottom: 10px; }
+  #tela-bloqueio p { color: #333; font-size: 14px; line-height: 1.5; }
+  
+  #painel-admin { display: none; background: #fff3cd; border: 1px solid #ffeeba; border-radius: 12px; padding: 20px; margin-bottom: 20px; color: #856404; text-align: left; }
+  .admin-actions { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+  .btn-admin { padding: 8px 16px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; }
+  .btn-lock { background: #dc3545; color: white; }
+  .btn-unlock { background: #28a745; color: white; }
+  .btn-close-admin { background: #6c757d; color: white; margin-left: auto; }
+
   @media(max-width: 600px) {
     .row { flex-direction: column; gap: 8px; }
     .card { padding: 14px 12px; }
     .alunos-header span { font-size: 10px; padding: 5px 4px; }
     .aluno-row input, .aluno-row select { font-size: 11px; padding: 6px 4px; }
+    .admin-actions { flex-direction: column; gap: 6px; }
+    .btn-close-admin { margin-left: 0; }
   }
 </style>
 </head>
 <body>
 <div class="container">
 
-  <div class="header">
-    <h1>📋 Registro de Presença e Notas</h1>
-    <p>Next Level · Gestão Acadêmica</p>
-  </div>
-  <div class="gold-bar"></div>
-
-  <div class="card">
-    <div class="section-title">▸ IDENTIFICAÇÃO DA TURMA</div>
-    <div class="row">
-      <div class="field">
-        <label>Monitor Principal *</label>
-        <select id="monitor" onchange="carregarTurmaPorMonitor()">
-          <option value="">Carregando monitores da planilha...</option>
-        </select>
-      </div>
-    </div>
-    <div class="row">
-      <div class="field">
-        <label>Curso</label>
-        <input type="text" id="curso" readonly style="background: #e9ecef; color: #495057;">
-      </div>
-      <div class="field">
-        <label>Matéria</label>
-        <input type="text" id="materia" readonly style="background: #e9ecef; color: #495057;">
-      </div>
-      <div class="field">
-        <label>Professor</label>
-        <input type="text" id="professor" readonly style="background: #e9ecef; color: #495057;">
-      </div>
+  <div id="painel-admin">
+    <h3>⚙️ Painel de Controle Administrativo</h3>
+    <p>Gerencie a disponibilidade do sistema de presença em tempo real:</p>
+    <div class="admin-actions">
+      <button class="btn-admin btn-lock" onclick="window.alterarStatusSistema('FECHADO')">🔒 Travar Sistema (Bloquear Alunos)</button>
+      <button class="btn-admin btn-unlock" onclick="window.alterarStatusSistema('ABERTO')">🔓 Destravar Sistema (Liberar Alunos)</button>
+      <button class="btn-admin btn-close-admin" onclick="window.fecharPainelAdmin()">Fechar Painel</button>
     </div>
   </div>
 
-  <div class="card">
-    <div class="section-title">▸ REGISTRO DOS ALUNOS</div>
-    <div class="scroll-tabela">
-      <div class="scroll-tabela-inner">
-        <div class="alunos-header">
-          <span>Nome do Aluno</span>
-          <span>Aula 1</span>
-          <span>Aula 2</span>
-          <span>Aula 3</span>
-          <span>Aula 4</span>
-          <span>Nota Prova</span>
+  <div id="conteudo-sistema">
+    <div class="header">
+      <h1>📋 Registro de Presença e Notas</h1>
+      <p>Next Level · Gestão Acadêmica</p>
+    </div>
+    <div class="gold-bar"></div>
+
+    <div class="card">
+      <div class="section-title">▸ IDENTIFICAÇÃO DA TURMA</div>
+      <div class="row">
+        <div class="field">
+          <label>Monitor Principal *</label>
+          <select id="monitor" onchange="carregarTurmaPorMonitor()">
+            <option value="">Carregando monitores da planilha...</option>
+          </select>
         </div>
-        <div id="lista-alunos"></div>
       </div>
+      <div class="row">
+        <div class="field">
+          <label>Curso</label>
+          <input type="text" id="curso" readonly style="background: #e9ecef; color: #495057;">
+        </div>
+        <div class="field">
+          <label>Matéria</label>
+          <input type="text" id="materia" readonly style="background: #e9ecef; color: #495057;">
+        </div>
+        <div class="field">
+          <label>Professor</label>
+          <input type="text" id="professor" readonly style="background: #e9ecef; color: #495057;">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">▸ REGISTRO DOS ALUNOS</div>
+      <div class="scroll-tabela">
+        <div class="scroll-tabela-inner">
+          <div class="alunos-header">
+            <span>Nome do Aluno</span>
+            <span>Aula 1</span>
+            <span>Aula 2</span>
+            <span>Aula 3</span>
+            <span>Aula 4</span>
+            <span>Nota Prova</span>
+          </div>
+          <div id="lista-alunos"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <button class="btn-cadastrar" onclick="cadastrar()" id="btnCadastrar" disabled>✅ CADASTRAR</button>
+      <div class="loading" id="loading">⏳ Processando, aguarde...</div>
+      <div class="msg" id="msg"></div>
     </div>
   </div>
 
-  <div class="card">
-    <button class="btn-cadastrar" onclick="cadastrar()" id="btnCadastrar" disabled>✅ CADASTRAR</button>
-    <div class="loading" id="loading">⏳ Processando, aguarde...</div>
-    <div class="msg" id="msg"></div>
+  <div id="tela-bloqueio">
+    <h2>🔒 Sistema Temporariamente Fechado</h2>
+    <p>Aguarde o momento da reabertura para o cadastro de presença dos alunos.</p>
   </div>
 
-  <div class="footer">ℹ️ Selecione o Monitor para carregar as informações diretamente da planilha institucional.</div>
+  <div class="footer">
+    <button onclick="window.verificarAcessoAdmin()" style="background: none; border: none; cursor: pointer; font-size: 14px; padding: 0 8px; display: inline-block; vertical-align: middle; outline: none;">ℹ️</button> 
+    Selecione o Monitor para carregar as informações diretamente da planilha institucional.
+  </div>
 </div>
 
 <script>
-  // INSIRA AQUI A SUA URL GERADA NO PASSO ANTERIOR
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhiWg-94orW-B__luNZRkOzbt1fY-x-0tiawgHqIaTYvQE0ce83229q2jXglKguouQ/exec";
 
   let baseDadosPlanilha = {};
@@ -131,6 +164,13 @@
       if(data.error) {
         monitorSel.innerHTML = '<option value="">Erro ao carregar dados da Planilha</option>';
         return;
+      }
+
+      // VERIFICAÇÃO DE LOCKOUT: Se a planilha retornar que está fechado, oculta o formulário e exibe o aviso
+      if (data.statusSistema === "FECHADO") {
+        document.getElementById("conteudo-sistema").style.display = "none";
+        document.getElementById("tela-bloqueio").style.display = "block";
+        return; 
       }
 
       baseDadosPlanilha = data.base;
@@ -149,10 +189,48 @@
     }
   };
 
+  // Garante a função de prompt no escopo global
+  window.verificarAcessoAdmin = function() {
+    const senha = prompt("Digite a senha do administrador:");
+    if (senha === "nextlevel2026") {
+      document.getElementById("painel-admin").style.display = "block";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (senha !== null && senha !== "") {
+      alert("Senha incorreta!");
+    }
+  };
+
+  window.fecharPainelAdmin = function() {
+    document.getElementById("painel-admin").style.display = "none";
+  };
+
+  // Envia a instrução de alteração de status para o Google Apps Script
+  window.alterarStatusSistema = async function(novoStatus) {
+    if (!confirm(`Deseja alterar o status do sistema para ${novoStatus}?`)) return;
+    
+    const loading = document.getElementById("loading");
+    loading.style.display = "block";
+    
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ "acao": "ATUALIZAR_STATUS", "status": novoStatus })
+      });
+      
+      alert(`Sistema atualizado para ${novoStatus}! A página será recarregada.`);
+      window.location.reload();
+    } catch (e) {
+      alert("Erro ao tentar atualizar o status do sistema.");
+    } finally {
+      loading.style.display = "none";
+    }
+  };
+
   function carregarTurmaPorMonitor() {
     const monitorSel = document.getElementById("monitor").value;
     
-    // Reseta campos
     document.getElementById("curso").value = "";
     document.getElementById("materia").value = "";
     document.getElementById("professor").value = "";
@@ -163,15 +241,13 @@
 
     const dadosTurma = baseDadosPlanilha[monitorSel];
     
-    // Preenche cabeçalho estático vindo da planilha
     document.getElementById("curso").value = dadosTurma.curso;
     document.getElementById("materia").value = dadosTurma.materia;
     document.getElementById("professor").value = dadosTurma.professor;
 
-    // Desenha as 30 linhas injetando os alunos existentes nas primeiras posições
     const alunosInscritos = dadosTurma.alunos || [];
     for (let i = 1; i <= 30; i++) {
-      const nomeAluno = alunosInscritos[i - 1] || ""; // Pega o aluno ou deixa vazio se passar do limite
+      const nomeAluno = alunosInscritos[i - 1] || "";
       const div = document.createElement("div");
       div.className = "aluno-row";
       div.innerHTML = `
@@ -228,75 +304,3 @@
     }
 
     const alunos = [];
-    for (let i = 1; i <= 30; i++) {
-      const inputNome = document.getElementById(`nome_${i}`);
-      if (!inputNome) continue;
-      const nome = inputNome.value.trim();
-      if (nome) {
-        alunos.push({
-          nome,
-          aula1: document.getElementById(`aula1_${i}`).value,
-          aula2: document.getElementById(`aula2_${i}`).value,
-          aula3: document.getElementById(`aula3_${i}`).value,
-          aula4: document.getElementById(`aula4_${i}`).value,
-          notaP: document.getElementById(`notaP_${i}`).value,
-        });
-      }
-    }
-
-    if (alunos.length === 0) {
-      mostrarMsg("error", "⚠️ Informe ao menos um nome de aluno na lista.");
-      return;
-    }
-
-    const btn     = document.getElementById("btnCadastrar");
-    const loading = document.getElementById("loading");
-    btn.disabled           = true;
-    loading.style.display  = "block";
-    document.getElementById("msg").className = "msg";
-
-    const ts = new Date().toLocaleString("pt-BR");
-    let erros = 0;
-
-    for (let idx = 0; idx < alunos.length; idx++) {
-      const a = alunos[idx];
-      const payload = {
-        "Número":        idx + 1,
-        "Timestamp":      ts,
-        "Curso":          curso,
-        "Matéria":        materia,
-        "Professor":      professor,
-        "Monitor":        monitor,
-        "Nome do Aluno":  a.nome,
-        "Aula1_val":      a.aula1,
-        "Aula2_val":      a.aula2,
-        "Aula3_val":      a.aula3,
-        "Aula4_val":      a.aula4,
-        "Nota Prova":     a.notaP ? parseFloat(a.notaP) : ""
-      };
-
-      try {
-        await fetch(SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-      } catch(e) {
-        erros++;
-      }
-    }
-
-    loading.style.display = "none";
-    btn.disabled = false;
-
-    if (erros === 0) {
-      mostrarMsg("success", `✅ Envio concluído! ${alunos.length} registros inseridos com sucesso na planilha.`);
-      carregarTurmaPorMonitor(); // Reseta os campos mantendo a lista original limpa
-    } else {
-      mostrarMsg("error", `⚠️ Ocorreu um erro ao salvar alguns dados. Verifique a planilha.`);
-    }
-  }
-</script>
-</body>
-</html>
