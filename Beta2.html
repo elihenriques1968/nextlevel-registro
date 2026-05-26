@@ -121,7 +121,7 @@
 
   let baseDadosPlanilha = {};
 
-  // Busca as turmas e alunos direto da planilha quando a página abre
+ // Busca as turmas e alunos direto da planilha quando a página abre
   window.onload = async function() {
     const monitorSel = document.getElementById("monitor");
     try {
@@ -133,6 +133,13 @@
         return;
       }
 
+      // VERIFICAÇÃO DE LOCKOUT: Se a planilha retornar que está fechado, oculta o formulário e exibe o aviso
+      if (data.statusSistema === "FECHADO") {
+        document.getElementById("conteudo-sistema").style.display = "none";
+        document.getElementById("tela-bloqueio").style.display = "block";
+        return; 
+      }
+
       baseDadosPlanilha = data.base;
       monitorSel.innerHTML = '<option value="">Selecione o Monitor...</option>';
       
@@ -140,7 +147,7 @@
         const opt = document.createElement("option");
         opt.value = monitor;
         opt.textContent = monitor;
-        monitorSel.appendChild(opt);
+        monitorSel.appendChild(opt); // <-- CORRIGIDO: Anexa o elemento corretamente no select
       });
 
       document.getElementById("btnCadastrar").disabled = false;
@@ -148,7 +155,6 @@
       monitorSel.innerHTML = '<option value="">Erro de conexão com o banco de dados</option>';
     }
   };
-
   function carregarTurmaPorMonitor() {
     const monitorSel = document.getElementById("monitor").value;
     
