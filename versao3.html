@@ -307,7 +307,7 @@
   <div class="footer">
     ℹ️ Selecione o Monitor para carregar as informações diretamente da planilha institucional.
     &nbsp;&nbsp;
-    <span id="gatilho-admin" onclick="contarCliqueAdmin()" title="">·</span>
+<span>·</span>
   </div>
 
   <!-- PAINEL ADMIN (aparece abaixo do footer após autenticação) -->
@@ -540,22 +540,17 @@
   }
 
   // ─────────────────────────────────────────────────────────
-  //  GATILHO OCULTO — 5 cliques rápidos no ponto do footer
+  //  GATILHO OCULTO — Ctrl + Shift + A
   // ─────────────────────────────────────────────────────────
   let cliquesAdmin = 0;
   let timerAdmin = null;
-
-  function contarCliqueAdmin() {
-    cliquesAdmin++;
-    clearTimeout(timerAdmin);
-    if (cliquesAdmin >= 5) {
-      cliquesAdmin = 0;
+// Gatilho: Ctrl + Shift + A abre o painel admin
+document.addEventListener("keydown", function(e) {
+    if (e.ctrlKey && e.shiftKey && e.key === "A") {
       abrirModal();
-    } else {
-      timerAdmin = setTimeout(() => { cliquesAdmin = 0; }, 2000);
     }
-  }
-
+  });
+ 
   // ─────────────────────────────────────────────────────────
   //  MODAL DE SENHA
   // ─────────────────────────────────────────────────────────
