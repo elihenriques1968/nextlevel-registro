@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Next Level — Registro de Presença e Notas</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f4f8; min-height: 100vh; padding: 20px; }
+  .container { max-width: 750px; margin: 0 auto; }
+
+  .header { background: #1A3A5C; color: white; padding: 20px 24px; border-radius: 12px 12px 0 0; }
+  .header h1 { font-size: 18px; font-weight: bold; }
+  .header p { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+  .gold-bar { height: 5px; background: #E8A020; }
+
+  .card { background: white; padding: 20px 24px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; }
+  .card + .card { border-top: 1px solid #eee; }
+
+  .section-title { background: #1A3A5C; color: white; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 14px; }
+
+  .row { display: flex; gap: 14px; margin-bottom: 12px; }
+  .field { flex: 1; }
+  .field label { display: block; font-size: 12px; font-weight: bold; color: #2E6EA6; margin-bottom: 4px; }
+  .field select, .field input { width: 100%; padding: 9px 11px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; background: #EBF3FB; color: #333; outline: none; }
+  .field select:focus, .field input:focus { border-color: #2E6EA6; background: #fff; }
+
+  .alunos-header { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+  .alunos-header span { font-size: 11px; font-weight: bold; color: white; background: #2E6EA6; padding: 6px 8px; border-radius: 4px; text-align: center; display: flex; align-items: center; justify-content: center; }
+
+  .aluno-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; position: relative; }
+  .scroll-tabela { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .scroll-tabela-inner { min-width: 580px; }
+  .aluno-row input, .aluno-row select { width: 100%; padding: 7px 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px; background: #F5FAFF; }
+  .aluno-row:nth-child(even) input, .aluno-row:nth-child(even) select { background: #EBF3FB; }
+
+  .btn-cadastrar { width: 100%; padding: 14px; background: #1E8035; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 4px; letter-spacing: 0.5px; }
+  .btn-cadastrar:hover { background: #165f27; }
+  .btn-cadastrar:disabled { background: #aaa; cursor: not-allowed; }
+
+  .footer { background: #f8f8f8; border: 1px solid #ddd; border-top: none; border-radius: 0 0 12px 12px; padding: 10px 24px; font-size: 11px; color: #888; text-align: center; }
+
+  .msg { padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-top: 16px; display: none; }
+  .msg.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
+  .msg.error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+
+  .loading { display: none; text-align: center; color: #2E6EA6; font-size: 13px; margin-top: 10px; }
+
+  @media(max-width: 600px) {
+    .row { flex-direction: column; gap: 8px; }
+    .card { padding: 14px 12px; }
+    .alunos-header span { font-size: 10px; padding: 5px 4px; }
+    .aluno-row input, .aluno-row select { font-size: 11px; padding: 6px 4px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>📋 Registro de Presença e Notas</h1>
+    <p>Next Level · Gestão Acadêmica</p>
+  </div>
+  <div class="gold-bar"></div>
+
+  <div class="card">
+    <div class="section-title">▸ IDENTIFICAÇÃO DA TURMA</div>
+    <div class="row">
+      <div class="field">
+        <label>Monitor Principal *</label>
+        <select id="monitor" onchange="carregarTurmaPorMonitor()">
+          <option value="">Carregando monitores da planilha...</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>Curso</label>
+        <input type="text" id="curso" readonly style="background: #e9ecef; color: #495057;">
+      </div>
+      <div class="field">
+        <label>Matéria</label>
+        <input type="text" id="materia" readonly style="background: #e9ecef; color: #495057;">
+      </div>
+      <div class="field">
+        <label>Professor</label>
+        <input type="text" id="professor" readonly style="background: #e9ecef; color: #495057;">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">▸ REGISTRO DOS ALUNOS</div>
+    <div class="scroll-tabela">
+      <div class="scroll-tabela-inner">
+        <div class="alunos-header">
+          <span>Nome do Aluno</span>
+          <span>Aula 1</span>
+          <span>Aula 2</span>
+          <span>Aula 3</span>
+          <span>Aula 4</span>
+          <span>Nota Prova</span>
+        </div>
+        <div id="lista-alunos"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <button class="btn-cadastrar" onclick="cadastrar()" id="btnCadastrar" disabled>✅ CADASTRAR</button>
+    <div class="loading" id="loading">⏳ Processando, aguarde...</div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="footer">ℹ️ Selecione o Monitor para carregar as informações diretamente da planilha institucional.</div>
+</div>
+
+<script>
+  // INSIRA AQUI A SUA URL GERADA NO PASSO ANTERIOR
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhiWg-94orW-B__luNZRkOzbt1fY-x-0tiawgHqIaTYvQE0ce83229q2jXglKguouQ/exec";
+
+  let baseDadosPlanilha = {};
+
+  // Busca as turmas e alunos direto da planilha quando a página abre
+  window.onload = async function() {
+    const monitorSel = document.getElementById("monitor");
+    try {
+      const response = await fetch(SCRIPT_URL);
+      const data = await response.json();
+      
+      if(data.error) {
+        monitorSel.innerHTML = '<option value="">Erro ao carregar dados da Planilha</option>';
+        return;
+      }
+
+      baseDadosPlanilha = data.base;
+      monitorSel.innerHTML = '<option value="">Selecione o Monitor...</option>';
+      
+      Object.keys(baseDadosPlanilha).sort().forEach(monitor => {
+        const opt = document.createElement("option");
+        opt.value = monitor;
+        opt.textContent = monitor;
+        monitorSel.appendChild(opt);
+      });
+
+      document.getElementById("btnCadastrar").disabled = false;
+    } catch(e) {
+      monitorSel.innerHTML = '<option value="">Erro de conexão com o banco de dados</option>';
+    }
+  };
+
+  function carregarTurmaPorMonitor() {
+    const monitorSel = document.getElementById("monitor").value;
+    
+    // Reseta campos
+    document.getElementById("curso").value = "";
+    document.getElementById("materia").value = "";
+    document.getElementById("professor").value = "";
+    const container = document.getElementById("lista-alunos");
+    container.innerHTML = "";
+
+    if (!monitorSel || !baseDadosPlanilha[monitorSel]) return;
+
+    const dadosTurma = baseDadosPlanilha[monitorSel];
+    
+    // Preenche cabeçalho estático vindo da planilha
+    document.getElementById("curso").value = dadosTurma.curso;
+    document.getElementById("materia").value = dadosTurma.materia;
+    document.getElementById("professor").value = dadosTurma.professor;
+
+    // Desenha as 30 linhas injetando os alunos existentes nas primeiras posições
+    const alunosInscritos = dadosTurma.alunos || [];
+    for (let i = 1; i <= 30; i++) {
+      const nomeAluno = alunosInscritos[i - 1] || ""; // Pega o aluno ou deixa vazio se passar do limite
+      const div = document.createElement("div");
+      div.className = "aluno-row";
+      div.innerHTML = `
+        <input type="text" placeholder="Nome do aluno ${i}" id="nome_${i}" value="${nomeAluno}" autocomplete="off">
+        <select id="aula1_${i}">
+          <option value="">-</option>
+          <option>Presente</option>
+          <option>Ausente</option>
+          <option>Justificado</option>
+          <option>Não houve</option>
+        </select>
+        <select id="aula2_${i}">
+          <option value="">-</option>
+          <option>Presente</option>
+          <option>Ausente</option>
+          <option>Justificado</option>
+          <option>Não houve</option>
+        </select>
+        <select id="aula3_${i}">
+          <option value="">-</option>
+          <option>Presente</option>
+          <option>Ausente</option>
+          <option>Justificado</option>
+          <option>Não houve</option>
+        </select>
+        <select id="aula4_${i}">
+          <option value="">-</option>
+          <option>Presente</option>
+          <option>Ausente</option>
+          <option>Justificado</option>
+          <option>Não houve</option>
+        </select>
+        <input type="number" placeholder="0.0" step="0.1" min="0" max="10" id="notaP_${i}">
+      `;
+      container.appendChild(div);
+    }
+  }
+
+  function mostrarMsg(tipo, texto) {
+    const el = document.getElementById("msg");
+    el.className = "msg " + tipo;
+    el.textContent = texto;
+  }
+
+  async function cadastrar() {
+    const curso     = document.getElementById("curso").value;
+    const materia   = document.getElementById("materia").value;
+    const professor = document.getElementById("professor").value;
+    const monitor   = document.getElementById("monitor").value;
+
+    if (!monitor) {
+      mostrarMsg("error", "⚠️ Por favor, selecione um monitor.");
+      return;
+    }
+
+    const alunos = [];
+    for (let i = 1; i <= 30; i++) {
+      const inputNome = document.getElementById(`nome_${i}`);
+      if (!inputNome) continue;
+      const nome = inputNome.value.trim();
+      if (nome) {
+        alunos.push({
+          nome,
+          aula1: document.getElementById(`aula1_${i}`).value,
+          aula2: document.getElementById(`aula2_${i}`).value,
+          aula3: document.getElementById(`aula3_${i}`).value,
+          aula4: document.getElementById(`aula4_${i}`).value,
+          notaP: document.getElementById(`notaP_${i}`).value,
+        });
+      }
+    }
+
+    if (alunos.length === 0) {
+      mostrarMsg("error", "⚠️ Informe ao menos um nome de aluno na lista.");
+      return;
+    }
+
+    const btn     = document.getElementById("btnCadastrar");
+    const loading = document.getElementById("loading");
+    btn.disabled           = true;
+    loading.style.display  = "block";
+    document.getElementById("msg").className = "msg";
+
+    const ts = new Date().toLocaleString("pt-BR");
+    let erros = 0;
+
+    for (let idx = 0; idx < alunos.length; idx++) {
+      const a = alunos[idx];
+      const payload = {
+        "Número":        idx + 1,
+        "Timestamp":      ts,
+        "Curso":          curso,
+        "Matéria":        materia,
+        "Professor":      professor,
+        "Monitor":        monitor,
+        "Nome do Aluno":  a.nome,
+        "Aula1_val":      a.aula1,
+        "Aula2_val":      a.aula2,
+        "Aula3_val":      a.aula3,
+        "Aula4_val":      a.aula4,
+        "Nota Prova":     a.notaP ? parseFloat(a.notaP) : ""
+      };
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+      } catch(e) {
+        erros++;
+      }
+    }
+
+    loading.style.display = "none";
+    btn.disabled = false;
+
+    if (erros === 0) {
+      mostrarMsg("success", `✅ Envio concluído! ${alunos.length} registros inseridos com sucesso na planilha.`);
+      carregarTurmaPorMonitor(); // Reseta os campos mantendo a lista original limpa
+    } else {
+      mostrarMsg("error", `⚠️ Ocorreu um erro ao salvar alguns dados. Verifique a planilha.`);
+    }
+  }
+</script>
+</body>
+</html>
