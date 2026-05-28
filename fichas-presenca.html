@@ -175,13 +175,60 @@ thead th {
   padding: 8px 6px; border: 1px solid #444; text-align: center; white-space: nowrap;
 }
 thead th.col-name { text-align: left; padding-left: 10px; }
-thead th.col-date input.date-header {
-  background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,.4);
-  color: var(--gold); font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
-  font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
-  text-align: center; width: 62px; outline: none; padding: 1px 2px;
+
+/* ── CABEÇALHO AULA + DATA ── */
+thead th.col-date {
+  width: 68px;
+  vertical-align: middle;
 }
-thead th.col-date input.date-header::placeholder { color: rgba(255,255,255,.3); font-weight: 400; }
+.th-aula-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.th-aula-titulo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: var(--white);
+  line-height: 1;
+}
+.th-aula-data-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.th-aula-data-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 400;
+  font-size: 9px;
+  color: rgba(255,255,255,.65);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+input.date-header {
+  background: rgba(255,255,255,.12);
+  border: none;
+  border-bottom: 1px solid rgba(255,255,255,.35);
+  color: var(--gold);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  text-align: center;
+  width: 44px;
+  outline: none;
+  padding: 1px 3px;
+  border-radius: 2px;
+  transition: background .15s, border-color .15s;
+}
+input.date-header::placeholder { color: rgba(255,255,255,.3); font-weight: 400; }
+input.date-header:focus {
+  background: rgba(255,255,255,.22);
+  border-bottom-color: var(--gold);
+}
 
 tbody tr:nth-child(odd)  { background: var(--white); }
 tbody tr:nth-child(even) { background: var(--row-alt); }
@@ -323,39 +370,29 @@ async function loadSheet() {
   var id  = document.getElementById('sheetId').value.trim();
   var tab = document.getElementById('sheetTab').value.trim() || 'Ficha 1';
   document.getElementById('configError').style.display = 'none';
-
   if (!id) { showError('Informe o ID da planilha.'); return; }
-
   document.getElementById('loadingScreen').style.display = 'flex';
   hideConfig();
-
-  // Otimização de Rede: Chamada única e direta usando a URL estruturada padrão
   var url = 'https://docs.google.com/spreadsheets/d/' + id + '/gviz/tq?tqx=out:json&sheet=' + encodeURIComponent(tab);
-  
   try {
     var res = await fetch(url);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     var text = await res.text();
-    
     var jsonStr = null;
     var patterns = [
       /google\.visualization\.Query\.setResponse\(([\s\S]*)\)/,
       /setResponse\(([\s\S]*)\)/
     ];
-    
     for (var i = 0; i < patterns.length; i++) {
       var m = text.match(patterns[i]);
       if (m) { jsonStr = m[1]; break; }
     }
-    
     if (!jsonStr) jsonStr = text;
     jsonStr = jsonStr.replace(/\s*\)\s*;?\s*$/, '').trim();
     var json = JSON.parse(jsonStr);
-    
     if (!json.table || !json.table.rows || json.table.rows.length === 0) {
       throw new Error('Tabela vazia ou sem linhas de dados.');
     }
-    
     parseAndRender(json);
   } catch(e) {
     console.error('Fetch failed:', e);
@@ -368,13 +405,10 @@ async function loadSheet() {
 function parseAndRender(json) {
   var cols = json.table.cols.map(function(c) { return (c.label || c.id || '').trim().toLowerCase(); });
   var rows = json.table.rows || [];
-
-  // Otimização de processamento de strings (Fuzzy Matching mais enxuto)
-  var normalize = function(s) { 
-    return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim(); 
+  var normalize = function(s) {
+    return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
   };
   var colsNorm = cols.map(normalize);
-  
   var ci = {
     aluno:     colsNorm.findIndex(function(c) { return c.includes('aluno'); }),
     professor: colsNorm.findIndex(function(c) { return c.includes('professor'); }),
@@ -382,70 +416,58 @@ function parseAndRender(json) {
     horario:   colsNorm.findIndex(function(c) { return c.includes('horario'); }),
     monitor:   colsNorm.findIndex(function(c) { return c.includes('monitor'); })
   };
-  
   if (ci.aluno === -1) ci.aluno = 0;
   if (ci.professor === -1) ci.professor = 1;
   if (ci.materia === -1) ci.materia = 2;
   if (ci.horario === -1) ci.horario = 3;
   if (ci.monitor === -1) ci.monitor = 4;
-
   var groups = new Map();
   for (var i = 0; i < rows.length; i++) {
     var row = rows[i];
-    var cell = function(idx) { 
-      return (idx >= 0 && row.c[idx] && row.c[idx].v != null) ? String(row.c[idx].v).trim() : ''; 
+    var cell = function(idx) {
+      return (idx >= 0 && row.c[idx] && row.c[idx].v != null) ? String(row.c[idx].v).trim() : '';
     };
-    
     var aluno = cell(ci.aluno);
     if (!aluno) continue;
-    
     var alunoLower = aluno.toLowerCase();
     if (alunoLower === 'aluno' || alunoLower === 'aluno(a)' || alunoLower === 'nome') continue;
-
     var materia   = cell(ci.materia) || '(sem matéria)';
     var professor = cell(ci.professor);
     var horario   = cell(ci.horario);
     var monitor   = cell(ci.monitor);
-
     if (!groups.has(materia)) {
       groups.set(materia, { materia: materia, professor: professor, horario: horario, monitor: monitor, alunos: [] });
     }
     groups.get(materia).alunos.push(aluno);
   }
-
   if (groups.size === 0) {
     document.getElementById('loadingScreen').style.display = 'none';
     showConfig();
     showError('Nenhum dado encontrado. Verifique o nome da aba e o cabeçalho da planilha.');
     return;
   }
-
   renderPages(Array.from(groups.values()));
 }
 
 function renderPages(groups) {
   pages = groups;
   current = 0;
-
   var wrap = document.getElementById('pagesWrap');
   wrap.innerHTML = '';
   var dots = document.getElementById('pageDots');
   dots.innerHTML = '';
-
   groups.forEach(function(g, idx) {
     var page = document.createElement('div');
     page.className = 'page' + (idx === 0 ? ' active' : '');
     page.id = 'page-' + idx;
     page.innerHTML = buildSheetHTML(g, idx);
     wrap.appendChild(page);
-
     var dot = document.createElement('button');
     dot.className = 'dot' + (idx === 0 ? ' active' : '');
     dot.title = g.materia;
     dot.onclick = function() { goTo(idx); };
     dots.appendChild(dot);
   });
-
   document.getElementById('loadingScreen').style.display = 'none';
   document.getElementById('bottomNav').style.display = 'flex';
   document.getElementById('topbarSubtitle').textContent = groups.length + ' matéria' + (groups.length > 1 ? 's' : '') + ' encontrada' + (groups.length > 1 ? 's' : '');
@@ -455,7 +477,6 @@ function renderPages(groups) {
 function buildSheetHTML(g, idx) {
   var rowsHtml = '';
   var count = Math.max(g.alunos.length, 10);
-  
   for (var i = 0; i < count; i++) {
     var name = g.alunos[i] || '';
     var bg = i % 2 === 0 ? '' : 'style="background:var(--row-alt)"';
@@ -470,6 +491,19 @@ function buildSheetHTML(g, idx) {
       '<td class="col-center"><input class="cell-input center" type="text" maxlength="6" placeholder="—"></td>' +
       '<td class="col-result"><input class="cell-input center" type="text" placeholder="Aprovado"></td>' +
     '</tr>';
+  }
+
+  /* ── cabeçalho das 4 colunas de aula com título + campo de data ── */
+  function thAula(num) {
+    return '<th class="col-date">' +
+      '<div class="th-aula-wrap">' +
+        '<span class="th-aula-titulo">Aula ' + num + '</span>' +
+        '<div class="th-aula-data-row">' +
+          '<span class="th-aula-data-label">Data:</span>' +
+          '<input class="date-header" type="text" placeholder="__/__" maxlength="5">' +
+        '</div>' +
+      '</div>' +
+    '</th>';
   }
 
   return '<div class="sheet">' +
@@ -493,10 +527,10 @@ function buildSheetHTML(g, idx) {
           '<tr>' +
             '<th style="width:32px;">Nº</th>' +
             '<th class="col-name">ALUNO(A)</th>' +
-            '<th class="col-date" style="width:68px;"><input class="date-header" type="text" placeholder="Data 1"></th>' +
-            '<th class="col-date" style="width:68px;"><input class="date-header" type="text" placeholder="Data 2"></th>' +
-            '<th class="col-date" style="width:68px;"><input class="date-header" type="text" placeholder="Data 3"></th>' +
-            '<th class="col-date" style="width:68px;"><input class="date-header" type="text" placeholder="Data 4"></th>' +
+            thAula(1) +
+            thAula(2) +
+            thAula(3) +
+            thAula(4) +
             '<th style="width:58px;">Total<br>Faltas</th>' +
             '<th style="width:64px;">Nota<br>Prova</th>' +
             '<th style="width:84px;">Resultado</th>' +
