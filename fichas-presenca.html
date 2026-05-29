@@ -608,6 +608,13 @@ window.addEventListener('beforeprint', function() {
 window.addEventListener('afterprint', function() {
   document.querySelectorAll('.page').forEach(function(p, i) { p.classList.toggle('active', i === current); });
 });
+
+// ── CARREGAMENTO AUTOMÁTICO ──
+window.addEventListener('load', function() {
+  document.getElementById('sheetId').value = SHEET_ID_FIXO;
+  document.getElementById('sheetTab').value = SHEET_TAB_FIXO;
+  loadSheet();
+});
 </script>
 </body>
 </html>
