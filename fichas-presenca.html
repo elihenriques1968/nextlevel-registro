@@ -20,7 +20,6 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Barlow', sans-serif; background: #e8e4df; min-height: 100vh; }
 
-/* ── TOP BAR ── */
 .topbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   background: var(--brown-dark); border-bottom: 2px solid var(--gold);
@@ -42,7 +41,6 @@ body { font-family: 'Barlow', sans-serif; background: #e8e4df; min-height: 100vh
 .btn-nav:hover { background: var(--gold); color: var(--brown-dark); }
 .btn-nav:disabled { opacity: .25; cursor: default; }
 
-/* ── CONFIG PANEL ── */
 .config-panel { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 200; background: rgba(0,0,0,.7); display: flex; align-items: center; justify-content: center; }
 .config-box { background: var(--white); border-radius: 8px; padding: 36px 40px; max-width: 520px; width: 90%; box-shadow: 0 8px 40px rgba(0,0,0,.4); }
 .config-box h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 22px; color: var(--brown-dark); letter-spacing: 1px; margin-bottom: 6px; }
@@ -56,7 +54,6 @@ body { font-family: 'Barlow', sans-serif; background: #e8e4df; min-height: 100vh
 .config-aba-wrap input { margin-bottom: 0; }
 .config-error { color: #c0392b; font-size: 12px; margin-bottom: 12px; display: none; }
 
-/* ── BARRA DE DATAS GLOBAL ── */
 .dates-bar {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 99;
   background: var(--brown-dark); border-top: 2px solid var(--gold);
@@ -72,18 +69,15 @@ body { font-family: 'Barlow', sans-serif; background: #e8e4df; min-height: 100vh
 .dates-bar-field input:focus { background: rgba(255,255,255,.18); border-color: var(--gold); }
 .dates-bar-hint { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; color: rgba(255,255,255,.3); white-space: nowrap; }
 
-/* ── LOADING ── */
 .loading-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 150; background: var(--brown-dark); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
 .loading-screen .spinner { width: 48px; height: 48px; border: 4px solid rgba(201,168,76,.2); border-top-color: var(--gold); border-radius: 50%; animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-screen p { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 16px; color: rgba(255,255,255,.6); letter-spacing: 2px; text-transform: uppercase; }
 
-/* ── PAGES ── */
 .pages-wrap { padding-top: 58px; padding-bottom: 64px; }
 .page { display: none; }
 .page.active { display: block; }
 
-/* ── SHEET ── */
 .sheet { max-width: 900px; margin: 24px auto; background: var(--white); border: 1px solid var(--border); box-shadow: 0 4px 24px rgba(0,0,0,.12); }
 
 .sheet-header { background: linear-gradient(135deg, var(--brown-dark) 0%, var(--brown-mid) 60%, #5a3a18 100%); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 3px solid var(--gold); }
@@ -93,13 +87,11 @@ body { font-family: 'Barlow', sans-serif; background: #e8e4df; min-height: 100vh
 .next-level-badge { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 36px; color: var(--white); letter-spacing: 3px; line-height: 1; }
 .next-level-badge .sub { display: block; font-size: 11px; letter-spacing: 5px; color: var(--gold); margin-top: 2px; }
 
-/* META-BAND: usa spans para texto, não inputs */
 .meta-band { background: var(--gold); padding: 10px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
 .meta-field { display: flex; align-items: baseline; gap: 6px; border-bottom: 1.5px solid rgba(0,0,0,.15); padding-bottom: 3px; }
 .meta-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(0,0,0,.55); white-space: nowrap; flex-shrink: 0; }
 .meta-text { font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 13px; color: var(--black); flex: 1; min-width: 0; }
 
-/* TABLE */
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
 thead th { background: var(--brown-dark); color: var(--white); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; padding: 8px 6px; border: 1px solid #444; text-align: center; white-space: nowrap; }
@@ -109,9 +101,30 @@ thead th.col-date { width: 68px; vertical-align: middle; }
 .th-aula-titulo { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 13px; letter-spacing: 1px; color: var(--white); line-height: 1; }
 .th-aula-data-row { display: flex; align-items: center; gap: 3px; }
 .th-aula-data-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 400; font-size: 9px; color: rgba(255,255,255,.65); letter-spacing: 0.5px; white-space: nowrap; }
-/* Data no cabeçalho da tabela: span simples, não input */
-.date-display { color: var(--gold); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 0.5px; min-width: 30px; text-align: center; display: inline-block; }
-.date-display:empty::before { content: '__/__'; color: rgba(255,255,255,.2); font-weight: 400; }
+
+/* ── CAMPO DE DATA NA TABELA ──
+   Na tela: mostra valor digitado ou linha tracejada como guia visual.
+   Na impressão: mostra valor digitado (se houver) ou linha em branco para preenchimento manual.
+   O ::before nunca aparece na impressão — apenas na tela como guia. */
+.date-display {
+  color: var(--gold);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  min-width: 36px;
+  text-align: center;
+  display: inline-block;
+  border-bottom: 1px solid rgba(255,255,255,.3);
+}
+/* Guia visual apenas na tela — nunca impresso */
+@media screen {
+  .date-display:empty::before {
+    content: '__/__';
+    color: rgba(255,255,255,.2);
+    font-weight: 400;
+  }
+}
 
 tbody tr:nth-child(odd)  { background: var(--white); }
 tbody tr:nth-child(even) { background: var(--row-alt); }
@@ -131,32 +144,32 @@ td.col-result .cell-input { font-weight: 600; font-size: 11.5px; text-align: cen
 .add-row-strip { background: var(--gray-light); border-top: 1px dashed var(--border); padding: 8px 12px; display: flex; align-items: center; gap: 10px; }
 .add-row-strip span { font-family: 'Barlow', sans-serif; font-size: 12px; color: #888; }
 
-/* BOTTOM NAV */
 .bottom-nav { max-width: 900px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; gap: 16px; padding: 0 20px; }
 .page-dots { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
 .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(0,0,0,.2); cursor: pointer; transition: background .2s, transform .2s; border: none; padding: 0; }
 .dot.active { background: var(--gold); transform: scale(1.3); }
 .dot:hover:not(.active) { background: rgba(201,168,76,.5); }
 
-/* ══════════════════════════════
-   PRINT — solução definitiva
-   Todas as páginas são
-   renderizadas no DOM como
-   block mas escondidas via
-   visibility. Antes de imprimir
-   removemos o hidden.
-══════════════════════════════ */
 @media print {
   .topbar, .add-row-strip, .bottom-nav,
   .config-panel, .loading-screen, .dates-bar { display: none !important; }
 
   .pages-wrap { padding: 0 !important; }
 
-  /* Garante visibilidade de todas as páginas */
   .page { display: block !important; visibility: visible !important; page-break-after: always; }
   .page:last-child { page-break-after: auto; }
 
   .sheet { box-shadow: none !important; border: none !important; max-width: 100% !important; margin: 0 !important; }
+
+  /* ── CORREÇÃO: placeholders e guias visuais somem na impressão ── */
+  .cell-input::placeholder { color: transparent !important; }
+  /* .date-display:empty::before já está restrito a @media screen — não precisa repetir aqui */
+
+  /* A linha-guia da data vira branca na impressão (campo em branco para preencher à mão) */
+  .date-display {
+    border-bottom: 1px solid rgba(255,255,255,.5) !important;
+    min-width: 36px !important;
+  }
 
   thead th, .meta-band, .sheet-header, .sheet-footer {
     -webkit-print-color-adjust: exact !important;
@@ -224,7 +237,6 @@ td.col-result .cell-input { font-weight: 600; font-size: 11.5px; text-align: cen
   <button class="btn-nav" onclick="navigate(1)" id="btnNext2" disabled>›</button>
 </div>
 
-<!-- BARRA DE DATAS GLOBAL -->
 <div class="dates-bar" id="datesBar">
   <span class="dates-bar-label">Datas das Aulas:</span>
   <div class="dates-bar-fields">
@@ -254,7 +266,6 @@ var current = 0;
 var SHEET_ID_FIXO = "1QtGrQ0PGSCKRrZHtOoNa8no0O7pKJhrF3d6KPbagJgw";
 var SHEET_TAB_FIXO = "Ficha 1";
 
-// Propaga datas para os spans .date-display de TODAS as páginas
 function propagateDates() {
   var vals = [1,2,3,4].map(function(n) {
     return document.getElementById('globalDate' + n).value.trim();
@@ -265,7 +276,6 @@ function propagateDates() {
   });
 }
 
-// Impressão: mostra todas as páginas antes de chamar window.print()
 function doPrint() {
   propagateDates();
   document.querySelectorAll('.page').forEach(function(p) {
@@ -273,7 +283,6 @@ function doPrint() {
   });
   setTimeout(function() {
     window.print();
-    // Depois de imprimir, restaura estado
     setTimeout(function() {
       document.querySelectorAll('.page').forEach(function(p, i) {
         p.style.display = i === current ? 'block' : 'none';
@@ -363,7 +372,6 @@ function renderPages(groups) {
     var page = document.createElement('div');
     page.className = 'page';
     page.id = 'page-' + idx;
-    // Todas as páginas ficam no DOM como block mas só a ativa é visível via style
     page.style.display = idx === 0 ? 'block' : 'none';
     page.innerHTML = buildSheetHTML(g, idx, groups.length);
     wrap.appendChild(page);
@@ -486,7 +494,6 @@ document.addEventListener('keydown', function(e) {
   if (e.key==='ArrowLeft' ||e.key==='ArrowUp')   navigate(-1);
 });
 
-// Fallback: também captura o evento nativo de impressão (Ctrl+P)
 window.addEventListener('beforeprint', function() {
   propagateDates();
   document.querySelectorAll('.page').forEach(function(p){p.style.display='block';});
