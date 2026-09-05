@@ -387,6 +387,16 @@ td.col-result .cell-input { font-weight: 600; font-size: 11.5px; text-align: cen
 
 <script>
 
+
+// ── CONVERSÃO PARA ALGARISMOS ROMANOS ──
+function toRomano(str) {
+  var map = {
+    '10': 'X', '9': 'IX', '8': 'VIII', '7': 'VII', '6': 'VI',
+    '5': 'V',  '4': 'IV', '3': 'III',  '2': 'II',  '1': 'I'
+  };
+  return str.replace(/\b(10|[1-9])\b/g, function(n) { return map[n] || n; });
+}
+
 // ── PROPAGAÇÃO DE DATAS ──
 function propagateDates(aulaNum) {
   var val = document.getElementById('globalDate' + aulaNum).value;
@@ -463,7 +473,7 @@ function parseAndRender(json) {
     materia:   colsNorm.findIndex(function(c) { return c.includes('materia'); }),
     horario:   colsNorm.findIndex(function(c) { return c.includes('horario'); }),
     monitor:   colsNorm.findIndex(function(c) { return c.includes('monitor'); }),
-    curso:     7
+    curso:     6
   };
   if (ci.aluno === -1) ci.aluno = 0;
   if (ci.professor === -1) ci.professor = 1;
@@ -485,7 +495,7 @@ function parseAndRender(json) {
     var professor = cell(ci.professor);
     var horario   = cell(ci.horario);
     var monitor   = cell(ci.monitor);
-    var disciplina = curso ? materia + ' - ' + curso : materia;
+    var disciplina = curso ? materia + ' - ' + toRomano(curso) : materia;
     if (!groups.has(materia)) {
       groups.set(materia, { materia: materia, disciplina: disciplina, professor: professor, horario: horario, monitor: monitor, alunos: [] });
     }
