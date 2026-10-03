@@ -281,7 +281,7 @@
 </div>
 
 <script>
-  const SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbyUXrLj7M5oqGLhUcg7ho21Dm8VkK0LPHnAFiRzhPxI46E4XPRpn9Cjiw00LKnyJlca/exec";
+  const SCRIPT_URL   = "https://script.google.com/macros/s/AKfycbyUXrLj7M5oqGLhUcg7ho21Dm8VkK0LPHnAFiRzhPxI46E4XPRpn9Cjiw00LKnyJlca/exec";
   const SENHA_ADMIN = "nextlevel2026";
 
   const SIGLA_PRESENCA = {
@@ -348,6 +348,11 @@
     document.getElementById("materia").value   = dadosTurma.materia;
     document.getElementById("professor").value = dadosTurma.professor;
 
+    // Identifica se o curso é da modalidade online
+    const nomeCurso = (dadosTurma.curso || "").toLowerCase();
+    const ehOnline = nomeCurso.includes("online") || nomeCurso.includes("on-line");
+    const valorPadraoAula = ehOnline ? "On-line" : "";
+
     const alunosInscritos = dadosTurma.alunos || [];
     for (let i = 1; i <= 30; i++) {
       const nomeAluno = alunosInscritos[i - 1] || "";
@@ -357,23 +362,35 @@
         <input type="text" class="input-nome" placeholder="Nome do aluno ${i}" id="nome_${i}" value="${nomeAluno}" autocomplete="off">
         <select id="aula1_${i}">
           <option value="">-</option>
-          <option>Presente</option><option>Ausente</option>
-          <option>Justificado</option><option>Não houve</option><option>On-line</option>
+          <option ${valorPadraoAula === "Presente" ? "selected" : ""}>Presente</option>
+          <option ${valorPadraoAula === "Ausente" ? "selected" : ""}>Ausente</option>
+          <option ${valorPadraoAula === "Justificado" ? "selected" : ""}>Justificado</option>
+          <option ${valorPadraoAula === "Não houve" ? "selected" : ""}>Não houve</option>
+          <option ${valorPadraoAula === "On-line" ? "selected" : ""}>On-line</option>
         </select>
         <select id="aula2_${i}">
           <option value="">-</option>
-          <option>Presente</option><option>Ausente</option>
-          <option>Justificado</option><option>Não houve</option><option>On-line</option>
+          <option ${valorPadraoAula === "Presente" ? "selected" : ""}>Presente</option>
+          <option ${valorPadraoAula === "Ausente" ? "selected" : ""}>Ausente</option>
+          <option ${valorPadraoAula === "Justificado" ? "selected" : ""}>Justificado</option>
+          <option ${valorPadraoAula === "Não houve" ? "selected" : ""}>Não houve</option>
+          <option ${valorPadraoAula === "On-line" ? "selected" : ""}>On-line</option>
         </select>
         <select id="aula3_${i}">
           <option value="">-</option>
-          <option>Presente</option><option>Ausente</option>
-          <option>Justificado</option><option>Não houve</option><option>On-line</option>
+          <option ${valorPadraoAula === "Presente" ? "selected" : ""}>Presente</option>
+          <option ${valorPadraoAula === "Ausente" ? "selected" : ""}>Ausente</option>
+          <option ${valorPadraoAula === "Justificado" ? "selected" : ""}>Justificado</option>
+          <option ${valorPadraoAula === "Não houve" ? "selected" : ""}>Não houve</option>
+          <option ${valorPadraoAula === "On-line" ? "selected" : ""}>On-line</option>
         </select>
         <select id="aula4_${i}">
           <option value="">-</option>
-          <option>Presente</option><option>Ausente</option>
-          <option>Justificado</option><option>Não houve</option><option>On-line</option>
+          <option ${valorPadraoAula === "Presente" ? "selected" : ""}>Presente</option>
+          <option ${valorPadraoAula === "Ausente" ? "selected" : ""}>Ausente</option>
+          <option ${valorPadraoAula === "Justificado" ? "selected" : ""}>Justificado</option>
+          <option ${valorPadraoAula === "Não houve" ? "selected" : ""}>Não houve</option>
+          <option ${valorPadraoAula === "On-line" ? "selected" : ""}>On-line</option>
         </select>
         <input type="text" placeholder="0,0" maxlength="4" id="notaP_${i}" inputmode="decimal">
       `;
