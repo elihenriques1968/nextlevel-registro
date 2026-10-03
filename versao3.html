@@ -5,590 +5,590 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Next Level — Registro de Presença e Notas</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, sans-serif; background: #f0f4f8; min-height: 100vh; padding: 20px; }
-  .container { max-width: 750px; margin: 0 auto; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f4f8; min-height: 100vh; padding: 20px; }
+  .container { max-width: 750px; margin: 0 auto; }
 
-  .header { background: #1A3A5C; color: white; padding: 20px 24px; border-radius: 12px 12px 0 0; }
-  .header h1 { font-size: 18px; font-weight: bold; }
-  .header p { font-size: 12px; opacity: 0.8; margin-top: 4px; }
-  .gold-bar { height: 5px; background: #E8A020; }
+  .header { background: #1A3A5C; color: white; padding: 20px 24px; border-radius: 12px 12px 0 0; }
+  .header h1 { font-size: 18px; font-weight: bold; }
+  .header p { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+  .gold-bar { height: 5px; background: #E8A020; }
 
-  .card { background: white; padding: 20px 24px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; }
-  .card + .card { border-top: 1px solid #eee; }
+  .card { background: white; padding: 20px 24px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; }
+  .card + .card { border-top: 1px solid #eee; }
 
-  .section-title { background: #1A3A5C; color: white; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 14px; }
+  .section-title { background: #1A3A5C; color: white; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 14px; }
 
-  .row { display: flex; gap: 14px; margin-bottom: 12px; }
-  .field { flex: 1; }
-  .field label { display: block; font-size: 12px; font-weight: bold; color: #2E6EA6; margin-bottom: 4px; }
-  .field select, .field input { width: 100%; padding: 9px 11px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; background: #EBF3FB; color: #333; outline: none; }
-  .field select:focus, .field input:focus { border-color: #2E6EA6; background: #fff; }
+  .row { display: flex; gap: 14px; margin-bottom: 12px; }
+  .field { flex: 1; }
+  .field label { display: block; font-size: 12px; font-weight: bold; color: #2E6EA6; margin-bottom: 4px; }
+  .field select, .field input { width: 100%; padding: 9px 11px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; background: #EBF3FB; color: #333; outline: none; }
+  .field select:focus, .field input:focus { border-color: #2E6EA6; background: #fff; }
 
-  /* ── TABELA DE ALUNOS COM COLUNA NOME CONGELADA ── */
-  .alunos-header {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
-    gap: 0;
-    margin-bottom: 0;
-    min-width: 580px;
-  }
-  .alunos-header span {
-    font-size: 11px; font-weight: bold; color: white; background: #2E6EA6;
-    padding: 6px 8px; text-align: center;
-    display: flex; align-items: center; justify-content: center;
-    border-right: 1px solid #4a85c0;
-  }
-  .alunos-header span:last-child { border-right: none; }
+  /* ── TABELA DE ALUNOS COM COLUNA NOME CONGELADA ── */
+  .alunos-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+    gap: 0;
+    margin-bottom: 0;
+    min-width: 580px;
+  }
+  .alunos-header span {
+    font-size: 11px; font-weight: bold; color: white; background: #2E6EA6;
+    padding: 6px 8px; text-align: center;
+    display: flex; align-items: center; justify-content: center;
+    border-right: 1px solid #4a85c0;
+  }
+  .alunos-header span:last-child { border-right: none; }
 
-  /* Cabeçalho da coluna nome — sticky */
-  .alunos-header span.col-nome-header {
-    position: sticky;
-    left: 0;
-    z-index: 3;
-    background: #1A3A5C;
-    border-right: 2px solid #E8A020;
-  }
+  /* Cabeçalho da coluna nome — sticky */
+  .alunos-header span.col-nome-header {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    background: #1A3A5C;
+    border-right: 2px solid #E8A020;
+  }
 
-  .scroll-tabela {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-  }
-  .scroll-tabela-inner {
-    min-width: 580px;
-    position: relative;
-  }
+  .scroll-tabela {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+  }
+  .scroll-tabela-inner {
+    min-width: 580px;
+    position: relative;
+  }
 
-  .aluno-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
-    gap: 0;
-    border-bottom: 1px solid #eee;
-    position: relative;
-  }
-  .aluno-row:last-child { border-bottom: none; }
+  .aluno-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+    gap: 0;
+    border-bottom: 1px solid #eee;
+    position: relative;
+  }
+  .aluno-row:last-child { border-bottom: none; }
 
-  .aluno-row input, .aluno-row select {
-    width: 100%; padding: 7px 8px; border: none;
-    border-right: 1px solid #ddd;
-    font-size: 12px; background: #F5FAFF;
-    outline: none;
-  }
-  .aluno-row input:last-child,
-  .aluno-row select:last-child { border-right: none; }
+  .aluno-row input, .aluno-row select {
+    width: 100%; padding: 7px 8px; border: none;
+    border-right: 1px solid #ddd;
+    font-size: 12px; background: #F5FAFF;
+    outline: none;
+  }
+  .aluno-row input:last-child,
+  .aluno-row select:last-child { border-right: none; }
 
-  .aluno-row:nth-child(even) input,
-  .aluno-row:nth-child(even) select { background: #EBF3FB; }
+  .aluno-row:nth-child(even) input,
+  .aluno-row:nth-child(even) select { background: #EBF3FB; }
 
-  /* Coluna nome — sticky */
-  .aluno-row .input-nome {
-    position: sticky;
-    left: 0;
-    z-index: 2;
-    background: #F5FAFF;
-    border-right: 2px solid #E8A020 !important;
-    font-weight: 500;
-  }
-  .aluno-row:nth-child(even) .input-nome { background: #EBF3FB; }
+  /* Coluna nome — sticky */
+  .aluno-row .input-nome {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: #F5FAFF;
+    border-right: 2px solid #E8A020 !important;
+    font-weight: 500;
+  }
+  .aluno-row:nth-child(even) .input-nome { background: #EBF3FB; }
 
-  .btn-cadastrar { width: 100%; padding: 14px; background: #1E8035; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 4px; letter-spacing: 0.5px; }
-  .btn-cadastrar:hover { background: #165f27; }
-  .btn-cadastrar:disabled { background: #aaa; cursor: not-allowed; }
+  .btn-cadastrar { width: 100%; padding: 14px; background: #1E8035; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 4px; letter-spacing: 0.5px; }
+  .btn-cadastrar:hover { background: #165f27; }
+  .btn-cadastrar:disabled { background: #aaa; cursor: not-allowed; }
 
-  .footer { background: #f8f8f8; border: 1px solid #ddd; border-top: none; border-radius: 0 0 12px 12px; padding: 10px 24px; font-size: 11px; color: #888; text-align: center; }
+  .footer { background: #f8f8f8; border: 1px solid #ddd; border-top: none; border-radius: 0 0 12px 12px; padding: 10px 24px; font-size: 11px; color: #888; text-align: center; }
 
-  .msg { padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-top: 16px; display: none; }
-  .msg.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
-  .msg.error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+  .msg { padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-top: 16px; display: none; }
+  .msg.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
+  .msg.error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
 
-  .loading { display: none; text-align: center; color: #2E6EA6; font-size: 13px; margin-top: 10px; }
+  .loading { display: none; text-align: center; color: #2E6EA6; font-size: 13px; margin-top: 10px; }
 
-  #tela-bloqueio {
-    display: none; background: white;
-    border-left: 1px solid #ddd; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;
-    border-radius: 0 0 12px 12px; padding: 48px 24px; text-align: center;
-  }
-  .bloqueio-icone { font-size: 56px; margin-bottom: 16px; }
-  .bloqueio-titulo { font-size: 20px; font-weight: bold; color: #1A3A5C; margin-bottom: 10px; }
-  .bloqueio-msg { font-size: 14px; color: #555; line-height: 1.7; max-width: 420px; margin: 0 auto; }
-  .bloqueio-badge { display: inline-block; margin-top: 22px; background: #fff3cd; color: #856404; border: 1px solid #ffc107; border-radius: 20px; padding: 6px 18px; font-size: 12px; font-weight: bold; }
+  #tela-bloqueio {
+    display: none; background: white;
+    border-left: 1px solid #ddd; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;
+    border-radius: 0 0 12px 12px; padding: 48px 24px; text-align: center;
+  }
+  .bloqueio-icone { font-size: 56px; margin-bottom: 16px; }
+  .bloqueio-titulo { font-size: 20px; font-weight: bold; color: #1A3A5C; margin-bottom: 10px; }
+  .bloqueio-msg { font-size: 14px; color: #555; line-height: 1.7; max-width: 420px; margin: 0 auto; }
+  .bloqueio-badge { display: inline-block; margin-top: 22px; background: #fff3cd; color: #856404; border: 1px solid #ffc107; border-radius: 20px; padding: 6px 18px; font-size: 12px; font-weight: bold; }
 
-  #modal-senha { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9999; align-items: center; justify-content: center; }
-  #modal-senha.ativo { display: flex; }
-  .modal-box { background: white; border-radius: 14px; padding: 32px 28px; width: 100%; max-width: 360px; box-shadow: 0 8px 32px rgba(0,0,0,0.22); text-align: center; }
-  .modal-box h2 { font-size: 17px; color: #1A3A5C; margin-bottom: 6px; }
-  .modal-box p  { font-size: 12px; color: #888; margin-bottom: 18px; }
-  .modal-box input { width: 100%; padding: 10px 14px; border: 2px solid #ccc; border-radius: 8px; font-size: 14px; text-align: center; letter-spacing: 2px; margin-bottom: 12px; outline: none; }
-  .modal-box input:focus { border-color: #2E6EA6; }
-  .modal-box input.erro-campo { border-color: #dc3545; }
-  .modal-btn-row { display: flex; gap: 10px; }
-  .modal-btn-row button { flex: 1; padding: 10px; border: none; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
-  .btn-entrar { background: #1A3A5C; color: white; }
-  .btn-entrar:hover { background: #12283f; }
-  .btn-cancelar { background: #eee; color: #555; }
-  .btn-cancelar:hover { background: #ddd; }
-  .modal-erro { color: #dc3545; font-size: 12px; margin-top: 6px; min-height: 18px; }
+  #modal-senha { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9999; align-items: center; justify-content: center; }
+  #modal-senha.ativo { display: flex; }
+  .modal-box { background: white; border-radius: 14px; padding: 32px 28px; width: 100%; max-width: 360px; box-shadow: 0 8px 32px rgba(0,0,0,0.22); text-align: center; }
+  .modal-box h2 { font-size: 17px; color: #1A3A5C; margin-bottom: 6px; }
+  .modal-box p  { font-size: 12px; color: #888; margin-bottom: 18px; }
+  .modal-box input { width: 100%; padding: 10px 14px; border: 2px solid #ccc; border-radius: 8px; font-size: 14px; text-align: center; letter-spacing: 2px; margin-bottom: 12px; outline: none; }
+  .modal-box input:focus { border-color: #2E6EA6; }
+  .modal-box input.erro-campo { border-color: #dc3545; }
+  .modal-btn-row { display: flex; gap: 10px; }
+  .modal-btn-row button { flex: 1; padding: 10px; border: none; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; }
+  .btn-entrar { background: #1A3A5C; color: white; }
+  .btn-entrar:hover { background: #12283f; }
+  .btn-cancelar { background: #eee; color: #555; }
+  .btn-cancelar:hover { background: #ddd; }
+  .modal-erro { color: #dc3545; font-size: 12px; margin-top: 6px; min-height: 18px; }
 
-  #painel-admin { display: none; background: white; border: 2px solid #1A3A5C; border-radius: 12px; margin-top: 18px; overflow: hidden; }
-  .admin-header { background: #1A3A5C; color: white; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
-  .admin-header h3 { font-size: 14px; }
-  .btn-fechar-admin { background: rgba(255,255,255,0.15); border: none; color: white; padding: 4px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
-  .btn-fechar-admin:hover { background: rgba(255,255,255,0.28); }
-  .admin-corpo { padding: 22px 24px; }
-  .status-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; margin-bottom: 18px; }
-  .status-badge.aberto  { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-  .status-badge.fechado { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-  .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-  .status-badge.aberto  .status-dot { background: #28a745; }
-  .status-badge.fechado .status-dot { background: #dc3545; }
-  .admin-desc { font-size: 12px; color: #666; margin-bottom: 20px; line-height: 1.5; }
-  .btn-toggle-sistema { width: 100%; padding: 13px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; letter-spacing: 0.4px; transition: background 0.2s; }
-  .btn-toggle-sistema.fechar-btn { background: #dc3545; color: white; }
-  .btn-toggle-sistema.fechar-btn:hover { background: #b02a37; }
-  .btn-toggle-sistema.abrir-btn  { background: #1E8035; color: white; }
-  .btn-toggle-sistema.abrir-btn:hover  { background: #155c27; }
-  .btn-toggle-sistema:disabled { background: #aaa; cursor: not-allowed; }
-  .admin-loading { text-align: center; color: #2E6EA6; font-size: 12px; margin-top: 10px; display: none; }
-  .admin-msg { font-size: 12px; margin-top: 10px; padding: 8px 12px; border-radius: 6px; display: none; }
-  .admin-msg.ok  { background: #d4edda; color: #155724; display: block; }
-  .admin-msg.err { background: #f8d7da; color: #721c24; display: block; }
+  #painel-admin { display: none; background: white; border: 2px solid #1A3A5C; border-radius: 12px; margin-top: 18px; overflow: hidden; }
+  .admin-header { background: #1A3A5C; color: white; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .admin-header h3 { font-size: 14px; }
+  .btn-fechar-admin { background: rgba(255,255,255,0.15); border: none; color: white; padding: 4px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+  .btn-fechar-admin:hover { background: rgba(255,255,255,0.28); }
+  .admin-corpo { padding: 22px 24px; }
+  .status-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; margin-bottom: 18px; }
+  .status-badge.aberto  { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+  .status-badge.fechado { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .status-badge.aberto  .status-dot { background: #28a745; }
+  .status-badge.fechado .status-dot { background: #dc3545; }
+  .admin-desc { font-size: 12px; color: #666; margin-bottom: 20px; line-height: 1.5; }
+  .btn-toggle-sistema { width: 100%; padding: 13px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; letter-spacing: 0.4px; transition: background 0.2s; }
+  .btn-toggle-sistema.fechar-btn { background: #dc3545; color: white; }
+  .btn-toggle-sistema.fechar-btn:hover { background: #b02a37; }
+  .btn-toggle-sistema.abrir-btn  { background: #1E8035; color: white; }
+  .btn-toggle-sistema.abrir-btn:hover  { background: #155c27; }
+  .btn-toggle-sistema:disabled { background: #aaa; cursor: not-allowed; }
+  .admin-loading { text-align: center; color: #2E6EA6; font-size: 12px; margin-top: 10px; display: none; }
+  .admin-msg { font-size: 12px; margin-top: 10px; padding: 8px 12px; border-radius: 6px; display: none; }
+  .admin-msg.ok  { background: #d4edda; color: #155724; display: block; }
+  .admin-msg.err { background: #f8d7da; color: #721c24; display: block; }
 
-  @media(max-width: 600px) {
-    .row { flex-direction: column; gap: 8px; }
-    .card { padding: 14px 12px; }
-    .alunos-header span { font-size: 10px; padding: 5px 4px; }
-    .aluno-row input, .aluno-row select { font-size: 11px; padding: 6px 4px; }
-    .modal-box { margin: 0 16px; }
-  }
+  @media(max-width: 600px) {
+    .row { flex-direction: column; gap: 8px; }
+    .card { padding: 14px 12px; }
+    .alunos-header span { font-size: 10px; padding: 5px 4px; }
+    .aluno-row input, .aluno-row select { font-size: 11px; padding: 6px 4px; }
+    .modal-box { margin: 0 16px; }
+  }
 </style>
 </head>
 <body>
 <div class="container">
 
-  <div class="header">
-    <h1>📋 Registro de Presença e Notas</h1>
-    <p>Next Level · Gestão Acadêmica</p>
-  </div>
-  <div class="gold-bar"></div>
+  <div class="header">
+    <h1>📋 Registro de Presença e Notas</h1>
+    <p>Next Level · Gestão Acadêmica</p>
+  </div>
+  <div class="gold-bar"></div>
 
-  <div id="tela-bloqueio">
-    <div class="bloqueio-icone">🔒</div>
-    <div class="bloqueio-titulo">Sistema Temporariamente Fechado</div>
-    <div class="bloqueio-msg">
-      O sistema de registro de presença e notas está temporariamente indisponível.<br><br>
-      Aguarde o momento da reabertura para realizar o lançamento das presenças dos alunos.
-    </div>
-    <div class="bloqueio-badge">⏳ Em breve o sistema estará disponível</div>
-  </div>
+  <div id="tela-bloqueio">
+    <div class="bloqueio-icone">🔒</div>
+    <div class="bloqueio-titulo">Sistema Temporariamente Fechado</div>
+    <div class="bloqueio-msg">
+      O sistema de registro de presença e notas está temporariamente indisponível.<br><br>
+      Aguarde o momento da reabertura para realizar o lançamento das presenças dos alunos.
+    </div>
+    <div class="bloqueio-badge">⏳ Em breve o sistema estará disponível</div>
+  </div>
 
-  <div id="conteudo-sistema">
+  <div id="conteudo-sistema">
 
-    <div class="card">
-      <div class="section-title">▸ IDENTIFICAÇÃO DA TURMA</div>
-      <div class="row">
-        <div class="field">
-          <label>Monitor Principal *</label>
-          <select id="monitor" onchange="carregarTurmaPorMonitor()">
-            <option value="">Carregando monitores da planilha...</option>
-          </select>
-        </div>
-      </div>
-      <div class="row">
-        <div class="field">
-          <label>Curso</label>
-          <input type="text" id="curso" readonly style="background: #e9ecef; color: #495057;">
-        </div>
-        <div class="field">
-          <label>Matéria</label>
-          <input type="text" id="materia" readonly style="background: #e9ecef; color: #495057;">
-        </div>
-        <div class="field">
-          <label>Professor</label>
-          <input type="text" id="professor" readonly style="background: #e9ecef; color: #495057;">
-        </div>
-      </div>
-    </div>
+    <div class="card">
+      <div class="section-title">▸ IDENTIFICAÇÃO DA TURMA</div>
+      <div class="row">
+        <div class="field">
+          <label>Monitor Principal *</label>
+          <select id="monitor" onchange="carregarTurmaPorMonitor()">
+            <option value="">Carregando monitores da planilha...</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Curso</label>
+          <input type="text" id="curso" readonly style="background: #e9ecef; color: #495057;">
+        </div>
+        <div class="field">
+          <label>Matéria</label>
+          <input type="text" id="materia" readonly style="background: #e9ecef; color: #495057;">
+        </div>
+        <div class="field">
+          <label>Professor</label>
+          <input type="text" id="professor" readonly style="background: #e9ecef; color: #495057;">
+        </div>
+      </div>
+    </div>
 
-    <div class="card">
-      <div class="section-title">▸ REGISTRO DOS ALUNOS</div>
-      <div class="scroll-tabela">
-        <div class="scroll-tabela-inner">
-          <div class="alunos-header">
-            <span class="col-nome-header">Nome do Aluno</span>
-            <span>Aula 1</span>
-            <span>Aula 2</span>
-            <span>Aula 3</span>
-            <span>Aula 4</span>
-            <span>Nota Prova</span>
-          </div>
-          <div id="lista-alunos"></div>
-        </div>
-      </div>
-    </div>
+    <div class="card">
+      <div class="section-title">▸ REGISTRO DOS ALUNOS</div>
+      <div class="scroll-tabela">
+        <div class="scroll-tabela-inner">
+          <div class="alunos-header">
+            <span class="col-nome-header">Nome do Aluno</span>
+            <span>Aula 1</span>
+            <span>Aula 2</span>
+            <span>Aula 3</span>
+            <span>Aula 4</span>
+            <span>Nota Prova</span>
+          </div>
+          <div id="lista-alunos"></div>
+        </div>
+      </div>
+    </div>
 
-    <div class="card">
-      <button class="btn-cadastrar" onclick="cadastrar()" id="btnCadastrar" disabled>✅ CADASTRAR</button>
-      <div class="loading" id="loading">⏳ Processando, aguarde...</div>
-      <div class="msg" id="msg"></div>
-    </div>
+    <div class="card">
+      <button class="btn-cadastrar" onclick="cadastrar()" id="btnCadastrar" disabled>✅ CADASTRAR</button>
+      <div class="loading" id="loading">⏳ Processando, aguarde...</div>
+      <div class="msg" id="msg"></div>
+    </div>
 
-  </div>
+  </div>
 
-  <div class="footer">
-    ℹ️ Selecione o Monitor para carregar as informações diretamente da planilha institucional.
-    &nbsp;&nbsp;<span>·</span>
-  </div>
+  <div class="footer">
+    ℹ️ Selecione o Monitor para carregar as informações diretamente da planilha institucional.
+    &nbsp;&nbsp;<span>·</span>
+  </div>
 
-  <div id="painel-admin">
-    <div class="admin-header">
-      <h3>🔐 Painel Administrativo — Controle do Sistema</h3>
-      <button class="btn-fechar-admin" onclick="fecharPainelAdmin()">✕ Fechar</button>
-    </div>
-    <div class="admin-corpo">
-      <div id="status-sistema-badge" class="status-badge aberto">
-        <span class="status-dot"></span>
-        <span id="status-texto">Sistema ABERTO</span>
-      </div>
-      <p class="admin-desc">
-        Use o botão abaixo para controlar o acesso ao sistema de registro.<br>
-        Quando <strong>fechado</strong>, os monitores verão uma mensagem de indisponibilidade
-        e não conseguirão realizar lançamentos.
-      </p>
-      <button id="btn-toggle" class="btn-toggle-sistema fechar-btn" onclick="alternarSistema()">
-        🔒 FECHAR O SISTEMA AGORA
-      </button>
-      <div class="admin-loading" id="admin-loading">⏳ Atualizando na planilha...</div>
-      <div class="admin-msg" id="admin-msg"></div>
-    </div>
-  </div>
+  <div id="painel-admin">
+    <div class="admin-header">
+      <h3>🔐 Painel Administrativo — Controle do Sistema</h3>
+      <button class="btn-fechar-admin" onclick="fecharPainelAdmin()">✕ Fechar</button>
+    </div>
+    <div class="admin-corpo">
+      <div id="status-sistema-badge" class="status-badge aberto">
+        <span class="status-dot"></span>
+        <span id="status-texto">Sistema ABERTO</span>
+      </div>
+      <p class="admin-desc">
+        Use o botão abaixo para controlar o acesso ao sistema de registro.<br>
+        Quando <strong>fechado</strong>, os monitores verão uma mensagem de indisponibilidade
+        e não conseguirão realizar lançamentos.
+      </p>
+      <button id="btn-toggle" class="btn-toggle-sistema fechar-btn" onclick="alternarSistema()">
+        🔒 FECHAR O SISTEMA AGORA
+      </button>
+      <div class="admin-loading" id="admin-loading">⏳ Atualizando na planilha...</div>
+      <div class="admin-msg" id="admin-msg"></div>
+    </div>
+  </div>
 
 </div>
 
 <div id="modal-senha">
-  <div class="modal-box">
-    <h2>🔐 Acesso Restrito</h2>
-    <p>Digite a senha para acessar o painel administrativo</p>
-    <input type="password" id="campo-senha" placeholder="••••••••••••"
-           onkeydown="if(event.key==='Enter') confirmarSenha()">
-    <div class="modal-btn-row">
-      <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
-      <button class="btn-entrar"   onclick="confirmarSenha()">Entrar</button>
-    </div>
-    <div class="modal-erro" id="modal-erro"></div>
-  </div>
+  <div class="modal-box">
+    <h2>🔐 Acesso Restrito</h2>
+    <p>Digite a senha para acessar o painel administrativo</p>
+    <input type="password" id="campo-senha" placeholder="••••••••••••"
+           onkeydown="if(event.key==='Enter') confirmarSenha()">
+    <div class="modal-btn-row">
+      <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-entrar"   onclick="confirmarSenha()">Entrar</button>
+    </div>
+    <div class="modal-erro" id="modal-erro"></div>
+  </div>
 </div>
 
 <script>
-  const SCRIPT_URL   = "https://script.google.com/macros/s/AKfycbyUXrLj7M5oqGLhUcg7ho21Dm8VkK0LPHnAFiRzhPxI46E4XPRpn9Cjiw00LKnyJlca/exec";
-  const SENHA_ADMIN = "nextlevel2026";
+  const SCRIPT_URL   = "https://script.google.com/macros/s/AKfycbyUXrLj7M5oqGLhUcg7ho21Dm8VkK0LPHnAFiRzhPxI46E4XPRpn9Cjiw00LKnyJlca/exec";
+  const SENHA_ADMIN = "nextlevel2026";
 
-  const SIGLA_PRESENCA = {
-    "Presente":    "P",
-    "Ausente":     "A",
-    "Justificado": "J",
-    "Não houve":   "NH",
-    "On-line":     "OL",
-    "":            ""
-  };
+  const SIGLA_PRESENCA = {
+    "Presente":    "P",
+    "Ausente":     "A",
+    "Justificado": "J",
+    "Não houve":   "NH",
+    "On-line":     "OL",
+    "":            ""
+  };
 
-  let baseDadosPlanilha = {};
-  let statusAtual = "ABERTO";
+  let baseDadosPlanilha = {};
+  let statusAtual = "ABERTO";
 
-  window.onload = async function() {
-    const monitorSel = document.getElementById("monitor");
-    try {
-      const response = await fetch(SCRIPT_URL);
-      const data = await response.json();
+  window.onload = async function() {
+    const monitorSel = document.getElementById("monitor");
+    try {
+      const response = await fetch(SCRIPT_URL);
+      const data = await response.json();
 
-      if (data.error) {
-        monitorSel.innerHTML = '<option value="">Erro ao carregar dados da Planilha</option>';
-        return;
-      }
+      if (data.error) {
+        monitorSel.innerHTML = '<option value="">Erro ao carregar dados da Planilha</option>';
+        return;
+      }
 
-      if (data.statusSistema === "FECHADO") {
-        document.getElementById("conteudo-sistema").style.display = "none";
-        document.getElementById("tela-bloqueio").style.display = "block";
-        statusAtual = "FECHADO";
-        sincronizarBotaoAdmin();
-        return;
-      }
+      if (data.statusSistema === "FECHADO") {
+        document.getElementById("conteudo-sistema").style.display = "none";
+        document.getElementById("tela-bloqueio").style.display = "block";
+        statusAtual = "FECHADO";
+        sincronizarBotaoAdmin();
+        return;
+      }
 
-      statusAtual = "ABERTO";
-      baseDadosPlanilha = data.base;
-      monitorSel.innerHTML = '<option value="">Selecione o Monitor...</option>';
+      statusAtual = "ABERTO";
+      baseDadosPlanilha = data.base;
+      monitorSel.innerHTML = '<option value="">Selecione o Monitor...</option>';
 
-      Object.keys(baseDadosPlanilha).sort().forEach(monitor => {
-        const opt = document.createElement("option");
-        opt.value = monitor;
-        opt.textContent = monitor;
-        monitorSel.appendChild(opt);
-      });
+      Object.keys(baseDadosPlanilha).sort().forEach(monitor => {
+        const opt = document.createElement("option");
+        opt.value = monitor;
+        opt.textContent = monitor;
+        monitorSel.appendChild(opt);
+      });
 
-      document.getElementById("btnCadastrar").disabled = false;
+      document.getElementById("btnCadastrar").disabled = false;
 
-    } catch(e) {
-      monitorSel.innerHTML = '<option value="">Erro de conexão com o banco de dados</option>';
-    }
-  };
+    } catch(e) {
+      monitorSel.innerHTML = '<option value="">Erro de conexão com o banco de dados</option>';
+    }
+  };
 
-  function carregarTurmaPorMonitor() {
-    const monitorSel = document.getElementById("monitor").value;
-    document.getElementById("curso").value = "";
-    document.getElementById("materia").value = "";
-    document.getElementById("professor").value = "";
-    const container = document.getElementById("lista-alunos");
-    container.innerHTML = "";
+  function carregarTurmaPorMonitor() {
+    const monitorSel = document.getElementById("monitor").value;
+    document.getElementById("curso").value = "";
+    document.getElementById("materia").value = "";
+    document.getElementById("professor").value = "";
+    const container = document.getElementById("lista-alunos");
+    container.innerHTML = "";
 
-    if (!monitorSel || !baseDadosPlanilha[monitorSel]) return;
+    if (!monitorSel || !baseDadosPlanilha[monitorSel]) return;
 
-    const dadosTurma = baseDadosPlanilha[monitorSel];
-    document.getElementById("curso").value     = dadosTurma.curso;
-    document.getElementById("materia").value   = dadosTurma.materia;
-    document.getElementById("professor").value = dadosTurma.professor;
+    const dadosTurma = baseDadosPlanilha[monitorSel];
+    document.getElementById("curso").value     = dadosTurma.curso;
+    document.getElementById("materia").value   = dadosTurma.materia;
+    document.getElementById("professor").value = dadosTurma.professor;
 
-    // Identifica se o curso é da modalidade online
-    const nomeCurso = (dadosTurma.curso || "").toLowerCase();
-    const ehOnline = nomeCurso.includes("online") || nomeCurso.includes("on-line");
-    const valorPadraoAula = ehOnline ? "On-line" : "";
+    // Identifica se o curso é da modalidade online
+    const nomeCurso = (dadosTurma.curso || "").toLowerCase();
+    const ehOnline = nomeCurso.includes("online") || nomeCurso.includes("on-line");
+    const valorPadraoAula = ehOnline ? "On-line" : "";
 
-    const alunosInscritos = dadosTurma.alunos || [];
-    for (let i = 1; i <= 30; i++) {
-      const nomeAluno = alunosInscritos[i - 1] || "";
-      const div = document.createElement("div");
-      div.className = "aluno-row";
-      div.innerHTML = `
-        <input type="text" class="input-nome" placeholder="Nome do aluno ${i}" id="nome_${i}" value="${nomeAluno}" autocomplete="off">
-        <select id="aula1_${i}">
-          <option value="">-</option>
-          <option ${valorPadraoAula === "Presente" ? "selected" : ""}>Presente</option>
-          <option ${valorPadraoAula === "Ausente" ? "selected" : ""}>Ausente</option>
-          <option ${valorPadraoAula === "Justificado" ? "selected" : ""}>Justificado</option>
-          <option ${valorPadraoAula === "Não houve" ? "selected" : ""}>Não houve</option>
-          <option ${valorPadraoAula === "On-line" ? "selected" : ""}>On-line</option>
-        </select>
-        <select id="aula2_${i}">
-          <option value="">-</option>
-          <option ${valorPadraoAula === "Presente" ? "selected" : ""}>Presente</option>
-          <option ${valorPadraoAula === "Ausente" ? "selected" : ""}>Ausente</option>
-          <option ${valorPadraoAula === "Justificado" ? "selected" : ""}>Justificado</option>
-          <option ${valorPadraoAula === "Não houve" ? "selected" : ""}>Não houve</option>
-          <option ${valorPadraoAula === "On-line" ? "selected" : ""}>On-line</option>
-        </select>
-        <select id="aula3_${i}">
-          <option value="">-</option>
-          <option ${valorPadraoAula === "Presente" ? "selected" : ""}>Presente</option>
-          <option ${valorPadraoAula === "Ausente" ? "selected" : ""}>Ausente</option>
-          <option ${valorPadraoAula === "Justificado" ? "selected" : ""}>Justificado</option>
-          <option ${valorPadraoAula === "Não houve" ? "selected" : ""}>Não houve</option>
-          <option ${valorPadraoAula === "On-line" ? "selected" : ""}>On-line</option>
-        </select>
-        <select id="aula4_${i}">
-          <option value="">-</option>
-          <option ${valorPadraoAula === "Presente" ? "selected" : ""}>Presente</option>
-          <option ${valorPadraoAula === "Ausente" ? "selected" : ""}>Ausente</option>
-          <option ${valorPadraoAula === "Justificado" ? "selected" : ""}>Justificado</option>
-          <option ${valorPadraoAula === "Não houve" ? "selected" : ""}>Não houve</option>
-          <option ${valorPadraoAula === "On-line" ? "selected" : ""}>On-line</option>
-        </select>
-        <input type="text" placeholder="0,0" maxlength="4" id="notaP_${i}" inputmode="decimal">
-      `;
-      container.appendChild(div);
-    }
-  }
+    const alunosInscritos = dadosTurma.alunos || [];
+    for (let i = 1; i <= 30; i++) {
+      const nomeAluno = alunosInscritos[i - 1] || "";
+      const div = document.createElement("div");
+      div.className = "aluno-row";
+      div.innerHTML = `
+        <input type="text" class="input-nome" placeholder="Nome do aluno ${i}" id="nome_${i}" value="${nomeAluno}" autocomplete="off">
+        <select id="aula1_${i}">
+          <option value="">-</option>
+          <option ${valorPadraoAula === "Presente" ? "selected" : ""}>Presente</option>
+          <option ${valorPadraoAula === "Ausente" ? "selected" : ""}>Ausente</option>
+          <option ${valorPadraoAula === "Justificado" ? "selected" : ""}>Justificado</option>
+          <option ${valorPadraoAula === "Não houve" ? "selected" : ""}>Não houve</option>
+          <option ${valorPadraoAula === "On-line" ? "selected" : ""}>On-line</option>
+        </select>
+        <select id="aula2_${i}">
+          <option value="">-</option>
+          <option ${valorPadraoAula === "Presente" ? "selected" : ""}>Presente</option>
+          <option ${valorPadraoAula === "Ausente" ? "selected" : ""}>Ausente</option>
+          <option ${valorPadraoAula === "Justificado" ? "selected" : ""}>Justificado</option>
+          <option ${valorPadraoAula === "Não houve" ? "selected" : ""}>Não houve</option>
+          <option ${valorPadraoAula === "On-line" ? "selected" : ""}>On-line</option>
+        </select>
+        <select id="aula3_${i}">
+          <option value="">-</option>
+          <option ${valorPadraoAula === "Presente" ? "selected" : ""}>Presente</option>
+          <option ${valorPadraoAula === "Ausente" ? "selected" : ""}>Ausente</option>
+          <option ${valorPadraoAula === "Justificado" ? "selected" : ""}>Justificado</option>
+          <option ${valorPadraoAula === "Não houve" ? "selected" : ""}>Não houve</option>
+          <option ${valorPadraoAula === "On-line" ? "selected" : ""}>On-line</option>
+        </select>
+        <select id="aula4_${i}">
+          <option value="">-</option>
+          <option ${valorPadraoAula === "Presente" ? "selected" : ""}>Presente</option>
+          <option ${valorPadraoAula === "Ausente" ? "selected" : ""}>Ausente</option>
+          <option ${valorPadraoAula === "Justificado" ? "selected" : ""}>Justificado</option>
+          <option ${valorPadraoAula === "Não houve" ? "selected" : ""}>Não houve</option>
+          <option ${valorPadraoAula === "On-line" ? "selected" : ""}>On-line</option>
+        </select>
+        <input type="text" placeholder="0,0" maxlength="4" id="notaP_${i}" inputmode="decimal">
+      `;
+      container.appendChild(div);
+    }
+  }
 
-  function mostrarMsg(tipo, texto) {
-    const el = document.getElementById("msg");
-    el.className = "msg " + tipo;
-    el.textContent = texto;
-  }
+  function mostrarMsg(tipo, texto) {
+    const el = document.getElementById("msg");
+    el.className = "msg " + tipo;
+    el.textContent = texto;
+  }
 
-  async function cadastrar() {
-    const curso     = document.getElementById("curso").value;
-    const materia   = document.getElementById("materia").value;
-    const professor = document.getElementById("professor").value;
-    const monitor   = document.getElementById("monitor").value;
+  async function cadastrar() {
+    const curso     = document.getElementById("curso").value;
+    const materia   = document.getElementById("materia").value;
+    const professor = document.getElementById("professor").value;
+    const monitor   = document.getElementById("monitor").value;
 
-    if (!monitor) {
-      mostrarMsg("error", "⚠️ Por favor, selecione um monitor.");
-      return;
-    }
+    if (!monitor) {
+      mostrarMsg("error", "⚠️ Por favor, selecione um monitor.");
+      return;
+    }
 
-    const alunos = [];
-    for (let i = 1; i <= 30; i++) {
-      const inputNome = document.getElementById(`nome_${i}`);
-      if (!inputNome) continue;
-      const nome = inputNome.value.trim();
-      if (nome) {
-        alunos.push({
-          nome,
-          aula1: SIGLA_PRESENCA[document.getElementById(`aula1_${i}`).value] ?? "",
-          aula2: SIGLA_PRESENCA[document.getElementById(`aula2_${i}`).value] ?? "",
-          aula3: SIGLA_PRESENCA[document.getElementById(`aula3_${i}`).value] ?? "",
-          aula4: SIGLA_PRESENCA[document.getElementById(`aula4_${i}`).value] ?? "",
-          notaP: document.getElementById(`notaP_${i}`).value.trim().replace(".", ","),
-        });
-      }
-    }
+    const alunos = [];
+    for (let i = 1; i <= 30; i++) {
+      const inputNome = document.getElementById(`nome_${i}`);
+      if (!inputNome) continue;
+      const nome = inputNome.value.trim();
+      if (nome) {
+        alunos.push({
+          nome,
+          aula1: SIGLA_PRESENCA[document.getElementById(`aula1_${i}`).value] ?? "",
+          aula2: SIGLA_PRESENCA[document.getElementById(`aula2_${i}`).value] ?? "",
+          aula3: SIGLA_PRESENCA[document.getElementById(`aula3_${i}`).value] ?? "",
+          aula4: SIGLA_PRESENCA[document.getElementById(`aula4_${i}`).value] ?? "",
+          notaP: document.getElementById(`notaP_${i}`).value.trim().replace(".", ","),
+        });
+      }
+    }
 
-    if (alunos.length === 0) {
-      mostrarMsg("error", "⚠️ Informe ao menos um nome de aluno na lista.");
-      return;
-    }
+    if (alunos.length === 0) {
+      mostrarMsg("error", "⚠️ Informe ao menos um nome de aluno na lista.");
+      return;
+    }
 
-    const btn     = document.getElementById("btnCadastrar");
-    const loading = document.getElementById("loading");
-    btn.disabled = true;
-    loading.style.display = "block";
-    document.getElementById("msg").className = "msg";
+    const btn     = document.getElementById("btnCadastrar");
+    const loading = document.getElementById("loading");
+    btn.disabled = true;
+    loading.style.display = "block";
+    document.getElementById("msg").className = "msg";
 
-    const ts = new Date().toLocaleString("pt-BR");
-    let erros = 0;
+    const ts = new Date().toLocaleString("pt-BR");
+    let erros = 0;
 
-    for (let idx = 0; idx < alunos.length; idx++) {
-      const a = alunos[idx];
-      const payload = {
-        "Número":        idx + 1,
-        "Timestamp":     ts,
-        "Curso":         curso,
-        "Matéria":       materia,
-        "Professor":     professor,
-        "Monitor":       monitor,
-        "Nome do Aluno": a.nome,
-        "Aula1_val":     a.aula1,
-        "Aula2_val":     a.aula2,
-        "Aula3_val":     a.aula3,
-        "Aula4_val":     a.aula4,
-        "Nota Prova":    a.notaP ? parseFloat(a.notaP) : ""
-      };
-      try {
-        await fetch(SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-      } catch(e) { erros++; }
-    }
+    for (let idx = 0; idx < alunos.length; idx++) {
+      const a = alunos[idx];
+      const payload = {
+        "Número":        idx + 1,
+        "Timestamp":     ts,
+        "Curso":         curso,
+        "Matéria":       materia,
+        "Professor":     professor,
+        "Monitor":       monitor,
+        "Nome do Aluno": a.nome,
+        "Aula1_val":     a.aula1,
+        "Aula2_val":     a.aula2,
+        "Aula3_val":     a.aula3,
+        "Aula4_val":     a.aula4,
+        "Nota Prova":    a.notaP ? parseFloat(a.notaP) : ""
+      };
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+      } catch(e) { erros++; }
+    }
 
-    loading.style.display = "none";
-    btn.disabled = false;
+    loading.style.display = "none";
+    btn.disabled = false;
 
-    if (erros === 0) {
-      mostrarMsg("success", `✅ Envio concluído! ${alunos.length} registros inseridos com sucesso na planilha.`);
-      carregarTurmaPorMonitor();
-    } else {
-      mostrarMsg("error", `⚠️ Ocorreu um erro ao salvar alguns dados. Verifique a planilha.`);
-    }
-  }
+    if (erros === 0) {
+      mostrarMsg("success", `✅ Envio concluído! ${alunos.length} registros inseridos com sucesso na planilha.`);
+      carregarTurmaPorMonitor();
+    } else {
+      mostrarMsg("error", `⚠️ Ocorreu um erro ao salvar alguns dados. Verifique a planilha.`);
+    }
+  }
 
-  document.addEventListener("keydown", function(e) {
-    if (e.ctrlKey && e.shiftKey && e.key === "F") abrirModal();
-  });
+  document.addEventListener("keydown", function(e) {
+    if (e.ctrlKey && e.shiftKey && e.key === "F") abrirModal();
+  });
 
-  function abrirModal() {
-    const modal = document.getElementById("modal-senha");
-    const campo = document.getElementById("campo-senha");
-    const erro  = document.getElementById("modal-erro");
-    campo.value = "";
-    campo.classList.remove("erro-campo");
-    erro.textContent = "";
-    modal.classList.add("ativo");
-    setTimeout(() => campo.focus(), 100);
-  }
+  function abrirModal() {
+    const modal = document.getElementById("modal-senha");
+    const campo = document.getElementById("campo-senha");
+    const erro  = document.getElementById("modal-erro");
+    campo.value = "";
+    campo.classList.remove("erro-campo");
+    erro.textContent = "";
+    modal.classList.add("ativo");
+    setTimeout(() => campo.focus(), 100);
+  }
 
-  function fecharModal() {
-    document.getElementById("modal-senha").classList.remove("ativo");
-  }
+  function fecharModal() {
+    document.getElementById("modal-senha").classList.remove("ativo");
+  }
 
-  function confirmarSenha() {
-    const campo = document.getElementById("campo-senha");
-    const erro  = document.getElementById("modal-erro");
-    if (campo.value === SENHA_ADMIN) {
-      fecharModal();
-      abrirPainelAdmin();
-    } else {
-      campo.classList.add("erro-campo");
-      erro.textContent = "❌ Senha incorreta. Tente novamente.";
-      campo.value = "";
-      campo.focus();
-    }
-  }
+  function confirmarSenha() {
+    const campo = document.getElementById("campo-senha");
+    const erro  = document.getElementById("modal-erro");
+    if (campo.value === SENHA_ADMIN) {
+      fecharModal();
+      abrirPainelAdmin();
+    } else {
+      campo.classList.add("erro-campo");
+      erro.textContent = "❌ Senha incorreta. Tente novamente.";
+      campo.value = "";
+      campo.focus();
+    }
+  }
 
-  document.getElementById("modal-senha").addEventListener("click", function(e) {
-    if (e.target === this) fecharModal();
-  });
+  document.getElementById("modal-senha").addEventListener("click", function(e) {
+    if (e.target === this) fecharModal();
+  });
 
-  function abrirPainelAdmin() {
-    sincronizarBotaoAdmin();
-    document.getElementById("painel-admin").style.display = "block";
-    document.getElementById("painel-admin").scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  function abrirPainelAdmin() {
+    sincronizarBotaoAdmin();
+    document.getElementById("painel-admin").style.display = "block";
+    document.getElementById("painel-admin").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
-  function fecharPainelAdmin() {
-    document.getElementById("painel-admin").style.display = "none";
-    document.getElementById("admin-msg").className = "admin-msg";
-  }
+  function fecharPainelAdmin() {
+    document.getElementById("painel-admin").style.display = "none";
+    document.getElementById("admin-msg").className = "admin-msg";
+  }
 
-  function sincronizarBotaoAdmin() {
-    const badge = document.getElementById("status-sistema-badge");
-    const texto = document.getElementById("status-texto");
-    const btn   = document.getElementById("btn-toggle");
+  function sincronizarBotaoAdmin() {
+    const badge = document.getElementById("status-sistema-badge");
+    const texto = document.getElementById("status-texto");
+    const btn   = document.getElementById("btn-toggle");
 
-    if (statusAtual === "ABERTO") {
-      badge.className = "status-badge aberto";
-      texto.textContent = "Sistema ABERTO";
-      btn.className = "btn-toggle-sistema fechar-btn";
-      btn.textContent = "🔒 FECHAR O SISTEMA AGORA";
-    } else {
-      badge.className = "status-badge fechado";
-      texto.textContent = "Sistema FECHADO";
-      btn.className = "btn-toggle-sistema abrir-btn";
-      btn.textContent = "🔓 REABRIR O SISTEMA AGORA";
-    }
-  }
+    if (statusAtual === "ABERTO") {
+      badge.className = "status-badge aberto";
+      texto.textContent = "Sistema ABERTO";
+      btn.className = "btn-toggle-sistema fechar-btn";
+      btn.textContent = "🔒 FECHAR O SISTEMA AGORA";
+    } else {
+      badge.className = "status-badge fechado";
+      texto.textContent = "Sistema FECHADO";
+      btn.className = "btn-toggle-sistema abrir-btn";
+      btn.textContent = "🔓 REABRIR O SISTEMA AGORA";
+    }
+  }
 
-  async function alternarSistema() {
-    const novoStatus = statusAtual === "ABERTO" ? "FECHADO" : "ABERTO";
-    const btn       = document.getElementById("btn-toggle");
-    const adminLoad = document.getElementById("admin-loading");
-    const adminMsg  = document.getElementById("admin-msg");
+  async function alternarSistema() {
+    const novoStatus = statusAtual === "ABERTO" ? "FECHADO" : "ABERTO";
+    const btn       = document.getElementById("btn-toggle");
+    const adminLoad = document.getElementById("admin-loading");
+    const adminMsg  = document.getElementById("admin-msg");
 
-    btn.disabled = true;
-    adminLoad.style.display = "block";
-    adminMsg.className = "admin-msg";
+    btn.disabled = true;
+    adminLoad.style.display = "block";
+    adminMsg.className = "admin-msg";
 
-    try {
-      await fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ acao: "SET_STATUS", status: novoStatus })
-      });
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ acao: "SET_STATUS", status: novoStatus })
+      });
 
-      statusAtual = novoStatus;
-      sincronizarBotaoAdmin();
+      statusAtual = novoStatus;
+      sincronizarBotaoAdmin();
 
-      adminMsg.className = "admin-msg ok";
-      if (novoStatus === "FECHADO") {
-        adminMsg.textContent = "✅ Sistema fechado! Os monitores verão a tela de bloqueio.";
-        document.getElementById("conteudo-sistema").style.display = "none";
-        document.getElementById("tela-bloqueio").style.display = "block";
-      } else {
-        adminMsg.textContent = "✅ Sistema reaberto! Os monitores já podem acessar normalmente.";
-        document.getElementById("tela-bloqueio").style.display = "none";
-        document.getElementById("conteudo-sistema").style.display = "block";
-      }
+      adminMsg.className = "admin-msg ok";
+      if (novoStatus === "FECHADO") {
+        adminMsg.textContent = "✅ Sistema fechado! Os monitores verão a tela de bloqueio.";
+        document.getElementById("conteudo-sistema").style.display = "none";
+        document.getElementById("tela-bloqueio").style.display = "block";
+      } else {
+        adminMsg.textContent = "✅ Sistema reaberto! Os monitores já podem acessar normalmente.";
+        document.getElementById("tela-bloqueio").style.display = "none";
+        document.getElementById("conteudo-sistema").style.display = "block";
+      }
 
-    } catch(e) {
-      adminMsg.className = "admin-msg err";
-      adminMsg.textContent = "❌ Erro ao atualizar. Verifique a conexão.";
-    }
+    } catch(e) {
+      adminMsg.className = "admin-msg err";
+      adminMsg.textContent = "❌ Erro ao atualizar. Verifique a conexão.";
+    }
 
-    adminLoad.style.display = "none";
-    btn.disabled = false;
-  }
+    adminLoad.style.display = "none";
+    btn.disabled = false;
+  }
 </script>
 </body>
 </html>
