@@ -155,6 +155,23 @@
   .admin-msg.ok  { background: #d4edda; color: #155724; display: block; }
   .admin-msg.err { background: #f8d7da; color: #721c24; display: block; }
 
+
+  /* ── BOTÕES DE AÇÃO RÁPIDA ── */
+  .acoes-rapidas {
+    display: none;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .acoes-rapidas.visivel { display: flex; }
+  .btn-acao {
+    flex: 1; padding: 10px 14px; border: none; border-radius: 7px;
+    font-size: 13px; font-weight: bold; cursor: pointer;
+    letter-spacing: 0.3px; transition: background 0.2s;
+  }
+  .btn-online { background: #2E6EA6; color: white; }
+  .btn-online:hover { background: #1a4f7a; }
+  .btn-limpar { background: #e9ecef; color: #495057; border: 1px solid #ced4da; }
+  .btn-limpar:hover { background: #d0d5db; }
   @media(max-width: 600px) {
     .row { flex-direction: column; gap: 8px; }
     .card { padding: 14px 12px; }
@@ -213,6 +230,10 @@
 
     <div class="card">
       <div class="section-title">▸ REGISTRO DOS ALUNOS</div>
+      <div class="acoes-rapidas" id="acoes-rapidas">
+        <button class="btn-acao btn-online" onclick="preencherOnline()">🌐 Preencher tudo como On-line</button>
+        <button class="btn-acao btn-limpar" onclick="limparAulas()">🗑️ Limpar todas as aulas</button>
+      </div>
       <div class="scroll-tabela">
         <div class="scroll-tabela-inner">
           <div class="alunos-header">
@@ -338,6 +359,7 @@
     document.getElementById("curso").value = "";
     document.getElementById("materia").value = "";
     document.getElementById("professor").value = "";
+    document.getElementById("acoes-rapidas").classList.remove("visivel");
     const container = document.getElementById("lista-alunos");
     container.innerHTML = "";
 
@@ -347,6 +369,14 @@
     document.getElementById("curso").value     = dadosTurma.curso;
     document.getElementById("materia").value   = dadosTurma.materia;
     document.getElementById("professor").value = dadosTurma.professor;
+
+    // ── Mostrar botões de ação rápida apenas para Next I ──
+    const acoesDiv = document.getElementById("acoes-rapidas");
+    if (dadosTurma.curso && dadosTurma.curso.toString().toUpperCase().includes("NEXT I")) {
+      acoesDiv.classList.add("visivel");
+    } else {
+      acoesDiv.classList.remove("visivel");
+    }
 
     const alunosInscritos = dadosTurma.alunos || [];
     for (let i = 1; i <= 30; i++) {
