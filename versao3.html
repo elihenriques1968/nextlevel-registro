@@ -500,6 +500,28 @@
     if (e.ctrlKey && e.shiftKey && e.key === "F") abrirModal();
   });
 
+  // ── AÇÕES RÁPIDAS ──
+  function preencherOnline() {
+    for (let i = 1; i <= 30; i++) {
+      ["aula1", "aula2", "aula3", "aula4"].forEach(function(aula) {
+        const sel = document.getElementById(aula + "_" + i);
+        if (sel) sel.value = "On-line";
+      });
+    }
+  }
+
+  function limparAulas() {
+    for (let i = 1; i <= 30; i++) {
+      ["aula1", "aula2", "aula3", "aula4"].forEach(function(aula) {
+        const sel = document.getElementById(aula + "_" + i);
+        if (sel) sel.value = "";
+      });
+    }
+  }
+
+
+  });
+
   function abrirModal() {
     const modal = document.getElementById("modal-senha");
     const campo = document.getElementById("campo-senha");
